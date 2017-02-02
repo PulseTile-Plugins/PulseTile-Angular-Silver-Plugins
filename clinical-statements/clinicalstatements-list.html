@@ -16,11 +16,11 @@
   </thead>
 
   <tbody>
-    <tr dir-paginate="clinicalNote in $ctrl.clinicalStatements | filter:$ctrl.search | itemsPerPage: 9" current-page="$ctrl.currentPage"  ng-click="$ctrl.go(clinicalNote.sourceId, clinicalNote.source)" ng-class="{info: $ctrl.selected(clinicalNote.sourceId)}">
-      <td>{{ clinicalNote.type }}</td>
-      <td>{{ clinicalNote.author }}</td>
-      <td class="orderDateTime">{{ clinicalNote.dateCreated }}</td>
-      <td>{{ clinicalNote.source }}</td>
+    <tr dir-paginate="clinicalStatement in $ctrl.clinicalStatements | filter:$ctrl.search | itemsPerPage: 9" current-page="$ctrl.currentPage"  ng-click="$ctrl.go(clinicalStatement.sourceId, clinicalStatement.source)" ng-class="{info: $ctrl.selected(clinicalStatement.sourceId)}">
+      <td>{{ clinicalStatement.type }}</td>
+      <td>{{ clinicalStatement.author }}</td>
+      <td class="orderDateTime">{{ clinicalStatement.dateCreated }}</td>
+      <td>{{ clinicalStatement.source }}</td>
     </tr>
 
     <tr ng-if="!$ctrl.clinicalStatements.length">

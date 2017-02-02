@@ -17,20 +17,20 @@
 let templateClinicalstatementsCreate = require('./clinicalstatements-create.html');
 
 class ClinicalstatementsCreateController {
-  constructor($scope, $state, $stateParams, $ngRedux, personalstatementsActions, serviceRequests) {
+  constructor($scope, $state, $stateParams, $ngRedux, clinicalstatementsActions, serviceRequests) {
     $scope.clinicalStatement = {};
     $scope.clinicalStatement.dateCreated = new Date().toISOString().slice(0, 10);
     
     this.setCurrentPageData = function (data) {
-      if (data.personalstatements.dataCreate !== null) {
-        this.goList();
-      }
-      if (data.patientsGet.data) {
-        this.currentPatient = data.patientsGet.data;
-      }
-      if (serviceRequests.currentUserData) {
-        $scope.currentUser = serviceRequests.currentUserData;
-      }
+      // if (data.clinicalstatements.dataCreate !== null) {
+      //   this.goList();
+      // }
+      // if (data.patientsGet.data) {
+      //   this.currentPatient = data.patientsGet.data;
+      // }
+      // if (serviceRequests.currentUserData) {
+      //   $scope.currentUser = serviceRequests.currentUserData;
+      // }
     };
 
     this.goList = function () {
@@ -69,7 +69,7 @@ class ClinicalstatementsCreateController {
 
     $scope.$on('$destroy', unsubscribe);
 
-    $scope.clinicalstatementsCreate = personalstatementsActions.create;
+    $scope.clinicalstatementsCreate = clinicalstatementsActions.create;
   }
 }
 
@@ -78,5 +78,5 @@ const ClinicalstatementsCreateComponent = {
   controller: ClinicalstatementsCreateController
 };
 
-ClinicalstatementsCreateController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'personalstatementsActions', 'serviceRequests'];
+ClinicalstatementsCreateController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'clinicalstatementsActions', 'serviceRequests'];
 export default ClinicalstatementsCreateComponent;
