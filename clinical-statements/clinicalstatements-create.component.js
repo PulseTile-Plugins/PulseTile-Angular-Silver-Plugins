@@ -15,6 +15,12 @@
 */
 
 let templateClinicalstatementsCreate = require('./clinicalstatements-create.html');
+let _ = require('underscore');
+
+// Todo - Use a service to get the latest tag names
+const TAG_NAMES = [
+  "PC", "XM", "Ix", "Vitals", "Rx", "Ortho", "Dx", "Meds", "MH", "HA", "Shoulder"
+]
 
 class ClinicalstatementsCreateController {
   constructor($scope, $state, $stateParams, $ngRedux, clinicalstatementsActions, serviceRequests) {
@@ -22,15 +28,63 @@ class ClinicalstatementsCreateController {
     $scope.clinicalStatement.dateCreated = new Date().toISOString().slice(0, 10);
     
     this.setCurrentPageData = function (data) {
-      // if (data.clinicalstatements.dataCreate !== null) {
-      //   this.goList();
-      // }
-      // if (data.patientsGet.data) {
-      //   this.currentPatient = data.patientsGet.data;
-      // }
-      // if (serviceRequests.currentUserData) {
-      //   $scope.currentUser = serviceRequests.currentUserData;
-      // }
+      console.log(data);
+    };
+
+    /**
+     * Take a supplied clinical phrase which could contain any of the following
+     * delimiters:
+     *   ~SUBJECT~
+     *   |VALUE|
+     *   {UNIT}
+     * and returns the phrase in a processed array form, where the fixed strings
+     * are string values and the variables are defined as an object representation
+     */
+    this.parsePhrase = function(phrase) {
+      let variables = { 
+        subject: /\~[^|{]*?\~/,
+        value:   /\|[^~{]*?\|/,
+        unit:    /\{[^~|]*?\}/
+      };
+
+      let parts = [phrase];
+
+      _.each(variables, (regex, type) => {
+        parts = _.flatten(_.map(parts, (p) => {
+          let match = regex.exec(p);
+          if(match) {
+            let before = p.slice(0,match.index);
+            let variable = { type, value: match[0].slice(1,-1) };
+            let after = p.substring(match.index + match[0].length);
+            return _.reject([before, variable, after], _.isEmpty);
+          }
+          else {
+            return p
+          }
+        }));
+      })
+      return parts;
+    }
+
+    /**
+     * Evaluate the current search expression. Look for a tag at the begining
+     * of the query, if one is found remove it from the query and set as the 
+     * tag to search in.
+     */
+    this.checkExpression = function(input) {
+      if(!$scope.clinicalStatement.tag) {
+        let tag = _.find(TAG_NAMES, t => input.startsWith(t + ' '));
+        let query = (tag) ? input.substring(tag.length + 1) : input;
+
+        Object.assign($scope.clinicalStatement, {query, tag});
+      }
+    };
+
+    /**
+     * Event handler for removing the tag being used for search
+     */
+    this.removeTag = function() {
+      delete $scope.clinicalStatement.tag;
     };
 
     this.goList = function () {

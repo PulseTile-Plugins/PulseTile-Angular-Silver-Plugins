@@ -69,7 +69,6 @@ export function update(patientId, composition) {
 }
 
 export default function clinicalstatementsActions($ngRedux) {
-  console.log("Gello")
   let actionCreator = {
     all, get, create, update
   };

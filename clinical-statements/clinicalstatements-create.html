@@ -21,37 +21,49 @@
         <button class="btn btn-success btn-inverse btn-square hidden-xs hidden-sm btn-expand-panel" ng-click="changeFullPanel('details')"><i class="fa fa-expand"></i><i class="fa fa-compress"></i></button>
         <button class="btn btn-success btn-inverse btn-square btn-toggle-rotate" ng-click="openPanel('clinicalStatementCreate')"><i class="fa fa-chevron-up"></i></button>
       </div>
-      <h3 class="panel-title">Create Personal Statement</h3>
+      <h3 class="panel-title">Create Clinical Statement</h3>
     </div>
     <div class="panel-body">
       <div class="panel-body-inner">
         <form name="clinicalStatementForm" class="form">
           <div class="form-group-wrapper">
-            <div class="form-group" ng-class="{'has-error': (formSubmitted || clinicalStatementForm.statementType.$dirty) && clinicalStatementForm.statementType.$invalid, 'has-success': clinicalStatementForm.statementType.$valid && clinicalStatementForm.statementType.$dirty}">
-              <label for="statementType" class="control-label">Type</label>
-              <div class="input-holder">
-                <input class="form-control input-sm" id="statementType" name="statementType" ng-model="clinicalStatement.statementType" required />
+            <div class="row">
+
+              <div class="col-xs-6">
+                <div class="form-group" ng-class="{'has-error': (formSubmitted || clinicalStatement.statements.$dirty) && clinicalStatement.statements.$invalid, 'has-success': clinicalStatement.statements.$valid && clinicalStatement.statements.$dirty}">
+                  <label for="statements" class="control-label">Statements</label>
+                  <div class="wrap-search wrap-header-search">
+                    <div class="holder">
+                      <div class="search-left-inner-addon" ng-show="clinicalStatement.tag" ng-cloak>
+                        <span>{{clinicalStatement.tag}}&nbsp;</span>
+                        <i ng-click="$ctrl.removeTag()" class="fa fa-times"></i>
+                      </div>
+                      <input class="form-control input-sm" ng-class="{'moveRight': clinicalStatement.tag}" ng-change="$ctrl.checkExpression(clinicalStatement.query)" ng-model="clinicalStatement.query" ng-trim="false" placeholder="Search" type="text"/>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <span class="help-block animate-fade" ng-show="formSubmitted && clinicalStatementForm.type.$error.required">You must enter a value.</span>
+
+              <div class="col-xs-6">
+                <div class="form-group" ng-class="{'has-error': (formSubmitted || clinicalStatement.statements.$dirty) && clinicalStatement.statements.$invalid, 'has-success': clinicalStatement.statements.$valid && clinicalStatement.statements.$dirty}">
+                  <label for="statements" class="control-label">Statements</label>
+                  <div class="input-holder">
+                    <textarea class="form-control textarea-big input-sm" id="statements" name="statements" ng-model="clinicalStatement.statements" required></textarea>
+                  </div>
+                  <span class="help-block animate-fade" ng-show="formSubmitted && clinicalStatement.statements.$error.required">You must enter a value.</span>
+                </div>
+              </div>
             </div>
 
-            <div class="form-group" ng-class="{'has-error': (formSubmitted || clinicalStatementForm.statements.$dirty) && clinicalStatementForm.statements.$invalid, 'has-success': clinicalStatementForm.statements.$valid && clinicalStatementForm.statements.$dirty}">
-              <label for="statements" class="control-label">Statement</label>
-              <div class="input-holder">
-                <textarea class="form-control textarea-big input-sm" id="statements" name="statements" ng-model="clinicalStatement.statements" required></textarea>
-              </div>
-              <span class="help-block animate-fade" ng-show="formSubmitted && clinicalStatementForm.statement.$error.required">You must enter a value.</span>
-            </div>
-
-            <div class="form-group form-group-sm" ng-class="{'has-error': (formSubmitted || clinicalStatementForm.author.$dirty) && clinicalStatementForm.author.$invalid, 'has-success': clinicalStatementForm.author.$valid && clinicalStatementForm.author.$dirty}">
+            <div class="form-group form-group-sm" ng-class="{'has-error': (formSubmitted || clinicalStatement.author.$dirty) && clinicalStatement.author.$invalid, 'has-success': clinicalStatement.author.$valid && clinicalStatement.author.$dirty}">
               <label for="author" class="control-label">Author</label>
               <div class="input-holder">
                 <input type="text" class="form-control input-sm" id="author" name="author" ng-model="clinicalStatement.author" required/>
               </div>
-              <span class="help-block animate-fade" ng-show="formSubmitted && clinicalStatementForm.author.$error.required">You must enter a value.</span>
+              <span class="help-block animate-fade" ng-show="formSubmitted && clinicalStatement.author.$error.required">You must enter a value.</span>
             </div>
             
-            <div class="form-group form-group-sm" ng-class="{'has-error': (formSubmitted || clinicalStatementForm.dateCreated.$dirty) && clinicalStatementForm.dateCreated.$invalid, 'has-success': clinicalStatementForm.dateCreated.$valid && clinicalStatementForm.dateCreated.$dirty}">
+            <div class="form-group form-group-sm" ng-class="{'has-error': (formSubmitted || clinicalStatement.dateCreated.$dirty) && clinicalStatement.dateCreated.$invalid, 'has-success': clinicalStatement.dateCreated.$valid && clinicalStatement.dateCreated.$dirty}">
               <label for="dateCreated" class="control-label">Date</label>
               <div class="inner-addon addon-left">
                 <div class="addon">
