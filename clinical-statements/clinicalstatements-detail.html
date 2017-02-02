@@ -1,0 +1,52 @@
+<div class="transbox">
+  <div class="innerTransbox">
+    <h3><strong>Clinical Statement</strong></h3>
+    <div class="form-horizontal text-left">
+
+      <div class="form-group">
+        <label class="control-label col-md-3">Type:</label>
+        <div class="col-md-9">
+          <div class="form-control-static">{{ $ctrl.clinicalStatement.type }}</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-md-12">Statement:</label>
+        <div class="col-md-12">
+          <div class="form-control-static">{{ $ctrl.clinicalStatement.statement }}</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-md-3">Author:</label>
+        <div class="col-md-9">
+          <div class="form-control-static">{{ $ctrl.clinicalStatement.author }}</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-md-3">Date Created:</label>
+        <div class="col-md-9">
+          <div class="form-control-static">{{ $ctrl.dateCreated }}</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-md-3">Source:</label>
+        <div class="col-md-9">
+          <div class="form-control-static">{{ $ctrl.clinicalStatement.source }}</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <span class="patientSummary-spinner" us-spinner="{radius:20, width:8, length: 16}" spinner-key="clinicalStatementDetail-spinner" spinner-start-active="true"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="form-group   text-right">
+  <button class="btn btn-info" ng-click="$ctrl.edit();"><i class="fa fa-pencil"></i> Edit</button>
+</div>

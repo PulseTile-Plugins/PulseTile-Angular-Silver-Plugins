@@ -1,0 +1,87 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{ modal.title }}</h4>
+</div>
+
+<div class="modal-body">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">{{ patient.name }}</h4>
+    </div>
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-sm-4 text-left">
+          <label>Born:</label> <strong>{{ patient.dateOfBirth | date:'dd-MMM-yyyy' }}</strong></div>
+        <div class="col-sm-4 text-center">
+          <label>Gender:</label> <strong>{{ patient.gender }}</strong></div>
+        <div class="col-sm-4 text-right">
+          <label>IHI No:</label> <strong>{{ patient.nhsNumber }}</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <form name="clinicalStatementForm" class="form-horizontal text-left">
+    <fieldset class="clinicalStatementForm">
+      <legend>{{ modal.title }}</legend>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group" ng-class="{'has-error': (formSubmitted || clinicalStatementForm.type.$dirty) && clinicalStatementForm.type.$invalid, 'has-success': clinicalStatementForm.type.$valid && clinicalStatementForm.type.$dirty}">
+            <label for="type" class="control-label col-md-12">Type</label>
+            <div class="col-md-12">
+              <div class="input-group">
+                <input class="form-control input-sm" id="type" name="type" ng-model="clinicalStatement.type" required />
+              </div>
+              <span class="help-block animate-fade" ng-show="formSubmitted && clinicalStatementForm.type.$error.required">You must enter a value.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group" ng-class="{'has-error': (formSubmitted || clinicalStatementForm.statement.$dirty) && clinicalStatementForm.statement.$invalid, 'has-success': clinicalStatementForm.statement.$valid && clinicalStatementForm.statement.$dirty}">
+            <label for="statement" class="control-label col-md-12">Statement</label>
+            <div class="col-md-12">
+              <div class="input-group">
+                <textarea class="form-control input-sm" id="statement" name="statement" ng-model="clinicalStatement.statement" required></textarea>
+              </div>
+              <span class="help-block animate-fade" ng-show="formSubmitted && clinicalStatementForm.statement.$error.required">You must enter a value.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group form-group-sm" ng-class="{'has-error': (formSubmitted || clinicalStatementForm.author.$dirty) && clinicalStatementForm.author.$invalid, 'has-success': clinicalStatementForm.author.$valid && clinicalStatementForm.author.$dirty}">
+            <label for="author" class="control-label col-md-12">Author</label>
+            <div class="col-md-12">
+              <div class="input-group">
+                <input type="text" class="form-control input-sm" id="author" name="author" ng-model="clinicalStatement.author" required/>
+              </div>
+              <span class="help-block animate-fade" ng-show="formSubmitted && clinicalStatementForm.author.$error.required">You must enter a value.</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group form-group-sm" ng-class="{'has-error': (formSubmitted || clinicalStatementForm.dateCreated.$dirty) && clinicalStatementForm.dateCreated.$invalid, 'has-success': clinicalStatementForm.dateCreated.$valid && clinicalStatementForm.dateCreated.$dirty}">
+            <label for="dateCreated" class="control-label col-md-12">Date Created</label>
+            <div class="col-md-12">
+              <div class="input-group">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default btn-sm" disabled><i class="fa fa-calendar"></i></button>
+                </span>
+                <input type="text" class="form-control" id="dateCreated" name="dateCreated" ng-model="clinicalStatement.dateCreated" required disabled />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <a class="btn btn-danger" ng-click="cancel()">Cancel</a>
+  <button class="btn btn-success" ng-click="formSubmitted = true; ok(clinicalStatementForm, clinicalStatement);"><i class="fa fa-check"></i> Complete</button>
+</div>
