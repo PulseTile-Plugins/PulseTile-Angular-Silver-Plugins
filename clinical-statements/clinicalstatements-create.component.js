@@ -137,7 +137,7 @@ class ClinicalstatementsCreateController {
         Object.assign($scope.clinicalStatement, {query, tag});
       }
     };
-    
+
     this.performClinicalSearch = function() {
       let {query, tag} = $scope.clinicalStatement;
       $scope.clinicalstatementsQuery(query,tag);
@@ -151,7 +151,6 @@ class ClinicalstatementsCreateController {
     };
 
     this.goList = function () {
-      console.log($state);
       $state.go('clinicalStatements', {
         patientId: $stateParams.patientId,
         reportType: $stateParams.reportType,
@@ -177,7 +176,6 @@ class ClinicalstatementsCreateController {
       };
 
       if (clinicalStatementForm.$valid) {
-
         $scope.clinicalstatementsCreate(this.currentPatient.id, toAdd);
       }
     }.bind(this);
