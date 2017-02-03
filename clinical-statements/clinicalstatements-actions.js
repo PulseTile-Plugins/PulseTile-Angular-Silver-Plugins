@@ -67,10 +67,24 @@ export function update(patientId, composition) {
     }
   };
 }
+export function query(prefix='', tag='') {
+  return {
+    types: [types.CLINICALSTATEMENTS_QUERY, types.CLINICALSTATEMENTS_QUERY_SUCCESS, types.CLINICALSTATEMENTS_QUERY_ERROR],
+    
+    config: {
+      method: 'get',
+      url: '/api-clinicalContent/phrases?prefix=' + encodeURIComponent(prefix) + '&tag=' + encodeURIComponent(tag)
+    },
+
+    meta: {
+      timestamp: Date.now()
+    }
+  }
+}
 
 export default function clinicalstatementsActions($ngRedux) {
   let actionCreator = {
-    all, get, create, update
+    all, get, create, update, query
   };
 
   return bindActionCreators(actionCreator, $ngRedux.dispatch);

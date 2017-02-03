@@ -85,7 +85,26 @@ export default function contacts(state = INITIAL_STATE, action) {
         isFetching: false,
         error: payload.error
       });
-    }
+    },
+    [types.CLINICALSTATEMENTS_QUERY]: (state) => {
+      return Object.assign({}, state, {
+        isFetching: true,
+        searchData: null
+      })
+    },
+    [types.CLINICALSTATEMENTS_QUERY_SUCCESS]: (state) => {
+      return Object.assign({}, state, {
+        isFetching: false,
+        searchData: payload.response
+      })
+    },
+    [types.CLINICALSTATEMENTS_QUERY_ERROR]: (state) => {
+      return Object.assign({}, state, {
+        isFetching: false,
+        error: payload.error,
+        searchData: null
+      })
+    },
   };
 
   return actions[action.type] ?
