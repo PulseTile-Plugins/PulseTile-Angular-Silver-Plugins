@@ -31,7 +31,7 @@
 
               <div class="col-xs-6">
                 <div class="form-group" ng-class="{'has-error': (formSubmitted || clinicalStatement.statements.$dirty) && clinicalStatement.statements.$invalid, 'has-success': clinicalStatement.statements.$valid && clinicalStatement.statements.$dirty}">
-                  <label for="statements" class="control-label">Statements</label>
+                  <label for="statements" class="control-label">Search</label>
                   <div class="wrap-search wrap-header-search">
                     <div class="holder">
                       <div class="search-left-inner-addon" ng-show="clinicalStatement.tag" ng-cloak>
@@ -41,7 +41,7 @@
                       <input class="form-control input-sm" ng-class="{'moveRight': clinicalStatement.tag}" ng-change="$ctrl.checkExpression(clinicalStatement.query)" ng-model="clinicalStatement.query" ng-trim="false" placeholder="Search" type="text"/>
                     </div>
                   </div>
-                  <table class="table table-bordered table-striped table-hover">
+                  <table class="table table-bordered table-striped table-hover" ng-show="$ctrl.searchResults">
                     <tbody>
                       <tr pagination-id="clinicalStatementSearch" dir-paginate="result in $ctrl.searchResults | itemsPerPage: 5" current-page="$ctrl.currentPage" ng-click="$ctrl.addStatement(result)">
                         <td>{{result.phrase}}</td>
@@ -59,11 +59,26 @@
               <div class="col-xs-6">
                 <div class="form-group" ng-class="{'has-error': (formSubmitted || clinicalStatement.statements.$dirty) && clinicalStatement.statements.$invalid, 'has-success': clinicalStatement.statements.$valid && clinicalStatement.statements.$dirty}">
                   <label for="statements" class="control-label">Statements</label>
-                  <div class="input-holder">
-                    <div contenteditable="true" class="form-control textarea-big input-sm" id="statements" name="statements" ng-model="clinicalStatement.statements" required>
-                      
-                    </div>
-                  </div>
+                  <input type="text" class="form-control" placeholder="Add a custom statement" ng-keydown="$ctrl.keyDownCustomStatement($event)" ng-model="clinicalStatement.customStatement">
+
+                  <table class="table table-bordered table-striped table-hover" ng-show="clinicalStatement.statements.length">
+                    <tbody>
+                      <tr ng-repeat="statement in clinicalStatement.statements">
+                        <td class="form-inline">
+                          <!-- Remove Statement button -->
+                          <i ng-click="$ctrl.removeStatement($index)" class="fa fa-times-circle"></i>
+                          
+                          <!-- Custom clinical statement input -->
+                          <input ng-if="isString(statement)" class="form-control" ng-model="statement" type="text" style="width: 90%;"/>
+                          <!-- Templated clinical statement input -->
+                          <span ng-if="isObject(statement)" ng-repeat="part in statement.parsed">
+                            <span ng-if="isString(part)">{{part}}</span>
+                            <input ng-if="isObject(part)" ng-model="part.value" class="form-control" style="width: 16%;">
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table> 
                   <span class="help-block animate-fade" ng-show="formSubmitted && clinicalStatement.statements.$error.required">You must enter a value.</span>
                 </div>
               </div>

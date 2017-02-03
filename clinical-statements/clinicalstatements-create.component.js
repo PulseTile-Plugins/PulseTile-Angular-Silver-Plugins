@@ -25,6 +25,9 @@ const TAG_NAMES = [
 class ClinicalstatementsCreateController {
   constructor($scope, $state, $stateParams, $ngRedux, clinicalstatementsActions, serviceRequests) {
     $scope.clinicalStatement = {};
+    $scope.clinicalStatement.statements = [];
+    $scope.isString = angular.isString
+    $scope.isObject = angular.isObject
     $scope.clinicalStatement.dateCreated = new Date().toISOString().slice(0, 10);
     
     this.currentPage = 1;
@@ -32,6 +35,9 @@ class ClinicalstatementsCreateController {
     this.setCurrentPageData = function (data) {
       if(data.clinicalStatements.searchData) {
         this.searchResults = data.clinicalStatements.searchData;
+      }
+      if (data.patientsGet.data) {
+        this.currentPatient = data.patientsGet.data;
       }
     };
 
@@ -70,8 +76,53 @@ class ClinicalstatementsCreateController {
       return parts;
     }
 
-    this.addStatement = function(phrase) {
-      console.log(this.parsePhrase(phrase));
+    /**
+     * Takes the UI phrases array (custom statements are strings and templated
+     * values are parsed objects) and converts in to a format to be sent ready
+     * to be sent to the api for persistence
+     */
+    this.transformPhrases = function(phrases) {
+      return _.map(phrases, (p) =>{
+        if(_.isString(p)) {
+          return {id: null, subject: p}
+        }
+        else {
+          let varHash = _
+            .chain(p.parsed)
+            .reject(_.isString)
+            .map((v)=>[v.type, v.value])
+            .object()
+            .value();
+          return Object.assign({id: p.id}, varHash);
+        }
+      });
+    }
+
+    /**
+     * Listen for an enter key in the custom statement input box. When detected,
+     * add a new statement and clear the statement content
+     */
+    this.keyDownCustomStatement = function(evt) {
+      if(evt.keyCode === 13) {
+        this.addStatement($scope.clinicalStatement.customStatement);
+        delete $scope.clinicalStatement.customStatement;
+      }
+    };
+
+    this.addStatement = function(result) {
+      if(angular.isString(result)) {
+        $scope.clinicalStatement.statements.push(result);
+      }
+      else {
+        $scope.clinicalStatement.statements.push({
+          parsed: this.parsePhrase(result.phrase),
+          id:     result.id
+        });
+      }
+    };
+
+    this.removeStatement = function(pos) {
+      $scope.clinicalStatement.statements.splice(pos, 1);
     };
 
     /**
@@ -110,10 +161,11 @@ class ClinicalstatementsCreateController {
     
     $scope.create = function (clinicalStatementForm, clinicalStatement) {
       $scope.formSubmitted = true;
+      let apiStatements = this.transformPhrases(clinicalStatement.statements);
+      console.log(apiStatements);
 
       let toAdd = {
-        statementType: clinicalStatement.statementType,
-        statements: clinicalStatement.statements,
+        statements: apiStatements,
         dateCreated: clinicalStatement.dateCreated,
         author: clinicalStatement.author,
         source: 'openehr'
