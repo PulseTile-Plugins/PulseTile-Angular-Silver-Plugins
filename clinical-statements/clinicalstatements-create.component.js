@@ -27,8 +27,12 @@ class ClinicalstatementsCreateController {
     $scope.clinicalStatement = {};
     $scope.clinicalStatement.dateCreated = new Date().toISOString().slice(0, 10);
     
+    this.currentPage = 1;
+
     this.setCurrentPageData = function (data) {
-      console.log(data);
+      if(data.clinicalStatements.searchData) {
+        this.searchResults = data.clinicalStatements.searchData;
+      }
     };
 
     /**
@@ -65,6 +69,10 @@ class ClinicalstatementsCreateController {
       })
       return parts;
     }
+
+    this.addStatement = function(phrase) {
+      console.log(this.parsePhrase(phrase));
+    };
 
     /**
      * Evaluate the current search expression. Look for a tag at the begining

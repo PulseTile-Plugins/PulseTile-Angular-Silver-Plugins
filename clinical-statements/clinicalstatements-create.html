@@ -41,6 +41,18 @@
                       <input class="form-control input-sm" ng-class="{'moveRight': clinicalStatement.tag}" ng-change="$ctrl.checkExpression(clinicalStatement.query)" ng-model="clinicalStatement.query" ng-trim="false" placeholder="Search" type="text"/>
                     </div>
                   </div>
+                  <table class="table table-bordered table-striped table-hover">
+                    <tbody>
+                      <tr pagination-id="clinicalStatementSearch" dir-paginate="result in $ctrl.searchResults | itemsPerPage: 5" current-page="$ctrl.currentPage" ng-click="$ctrl.addStatement(result)">
+                        <td>{{result.phrase}}</td>
+                      </tr>
+
+                      <tr ng-if="!$ctrl.searchResults.length">
+                        <td colspan="4"><span class="label label-default">No results found</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <dir-pagination-controls pagination-id="clinicalStatementSearch" on-page-change="$ctrl.pageChangeHandler($ctrl.newPageNumber)" boundary-links="false"></dir-pagination-controls>
                 </div>
               </div>
 
@@ -48,7 +60,9 @@
                 <div class="form-group" ng-class="{'has-error': (formSubmitted || clinicalStatement.statements.$dirty) && clinicalStatement.statements.$invalid, 'has-success': clinicalStatement.statements.$valid && clinicalStatement.statements.$dirty}">
                   <label for="statements" class="control-label">Statements</label>
                   <div class="input-holder">
-                    <textarea class="form-control textarea-big input-sm" id="statements" name="statements" ng-model="clinicalStatement.statements" required></textarea>
+                    <div contenteditable="true" class="form-control textarea-big input-sm" id="statements" name="statements" ng-model="clinicalStatement.statements" required>
+                      
+                    </div>
                   </div>
                   <span class="help-block animate-fade" ng-show="formSubmitted && clinicalStatement.statements.$error.required">You must enter a value.</span>
                 </div>

@@ -3,6 +3,7 @@ import * as types from '../../../constants/ActionTypes';
 const INITIAL_STATE = {
   isFetching: false,
   error: false,
+  searchData: null,
   data: null,
   dataGet: null,
   dataCreate: null,
