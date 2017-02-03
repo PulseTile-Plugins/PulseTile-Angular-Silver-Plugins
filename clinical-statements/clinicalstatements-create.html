@@ -63,7 +63,7 @@
 
                   <table class="table table-bordered table-striped table-hover" ng-show="clinicalStatement.statements.length">
                     <tbody>
-                      <tr ng-repeat="statement in clinicalStatement.statements">
+                      <tr ng-repeat="statement in clinicalStatement.statements track by $index">
                         <td class="form-inline">
                           <!-- Remove Statement button -->
                           <i ng-click="$ctrl.removeStatement($index)" class="fa fa-times-circle"></i>
@@ -71,7 +71,7 @@
                           <!-- Custom clinical statement input -->
                           <input ng-if="isString(statement)" class="form-control" ng-model="statement" type="text" style="width: 90%;"/>
                           <!-- Templated clinical statement input -->
-                          <span ng-if="isObject(statement)" ng-repeat="part in statement.parsed">
+                          <span ng-if="isObject(statement)" ng-repeat="part in statement.parsed track by $index">
                             <span ng-if="isString(part)">{{part}}</span>
                             <input ng-if="isObject(part)" ng-model="part.value" class="form-control" style="width: 16%;">
                           </span>
