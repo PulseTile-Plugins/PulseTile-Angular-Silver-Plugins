@@ -68,12 +68,15 @@ export function update(patientId, composition) {
   };
 }
 export function query(prefix='', tag='') {
+  let queryString = [];
+  if(tag) {    queryString.push('tag=' + encodeURIComponent(tag)); }
+  if(prefix) { queryString.push('prefix=' + encodeURIComponent(prefix));}
   return {
     types: [types.CLINICALSTATEMENTS_QUERY, types.CLINICALSTATEMENTS_QUERY_SUCCESS, types.CLINICALSTATEMENTS_QUERY_ERROR],
     
     config: {
       method: 'get',
-      url: '/api-clinicalContent/phrases?prefix=' + encodeURIComponent(prefix) + '&tag=' + encodeURIComponent(tag)
+      url: '/api-clinicalContent/phrases?' + queryString.join('&')
     },
 
     meta: {
