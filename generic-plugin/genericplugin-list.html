@@ -23,7 +23,7 @@
       <button class="btn btn-success btn-inverse btn-square hidden-xs hidden-sm btn-expand-panel" ng-click="changeFullPanel('main')" ng-if="$ctrl.isShowExpandBtn"><i class="fa fa-expand"></i><i class="fa fa-compress"></i></button>
       <button class="btn btn-success btn-inverse btn-dropdown-toggle btn-table"><i class="fa fa-table"></i></button>
     </div>
-    <h3 class="panel-title" ng-if="!$ctrl.isFilter">Clinical Notes</h3>
+    <h3 class="panel-title" ng-if="!$ctrl.isFilter">Generic</h3>
     <div class="panel-filter" ng-if="$ctrl.isFilter">
       <div class="inner-addon addon-left">
         <div class="addon">
@@ -45,14 +45,14 @@
       </thead>
 
       <tbody>
-        <tr dir-paginate="clinicalNote in $ctrl.clinicalNotes | filter:$ctrl.search | itemsPerPage: 10" current-page="$ctrl.currentPage"  ng-click="$ctrl.go(clinicalNote.sourceId, clinicalNote)" ng-class="{info: $ctrl.selected(clinicalNote.sourceId)}">
-          <td data-th="Type">{{ clinicalNote.noteType }}</td>
-          <td data-th="Author">{{ clinicalNote.author }}</td>
-          <td data-th="Date" class="orderDateTime">{{ clinicalNote.dateCreated | date:'dd-MMM-yyyy' }}</td>
-          <td data-th="Source" class="hidden-xs">{{ clinicalNote.source }}</td>
+        <tr dir-paginate="genericplugin in $ctrl.genericplugins | filter:$ctrl.search | itemsPerPage: 10" current-page="$ctrl.currentPage"  ng-click="$ctrl.go(genericplugin.sourceId, genericplugin)" ng-class="{info: $ctrl.selected(genericplugin.sourceId)}">
+          <td data-th="Type">{{ genericplugin.noteType }}</td>
+          <td data-th="Author">{{ genericplugin.author }}</td>
+          <td data-th="Date" class="orderDateTime">{{ genericplugin.dateCreated | date:'dd-MMM-yyyy' }}</td>
+          <td data-th="Source" class="hidden-xs">{{ genericplugin.source }}</td>
         </tr>
 
-        <tr ng-if="!$ctrl.clinicalNotes.length">
+        <tr ng-if="!$ctrl.genericplugins.length">
           <td colspan="4"><span class="label label-default">No personal notes</span></td>
         </tr>
       </tbody>

@@ -14,10 +14,10 @@
   ~  limitations under the License.
 */
 
-let templateClinicalnotesDetail = require('./clinicalnotes-detail.html');
+let templateGenericpluginDetail = require('./genericplugin-detail.html');
 
-class ClinicalnotesDetailController {
-  constructor($scope, $state, $stateParams, $ngRedux, clinicalnotesActions, serviceRequests, usSpinnerService) {
+class GenericpluginDetailController {
+  constructor($scope, $state, $stateParams, $ngRedux, genericpluginActions, serviceRequests, usSpinnerService) {
     
     this.setCurrentPageData = function (data) {
       /* istanbul ignore if  */
@@ -25,9 +25,9 @@ class ClinicalnotesDetailController {
         this.currentPatient = data.patientsGet.data;
       }
       if (data.personalnotes.dataGet) {
-        this.clinicalNote = data.clinicalnotes.dataGet;
-        this.dateCreated = moment(this.clinicalNote.dateCreated).format('DD-MMM-YYYY');
-        usSpinnerService.stop("clinicalNoteDetail-spinner");
+        this.genericplugin = data.genericplugin.dataGet;
+        this.dateCreated = moment(this.genericplugin.dateCreated).format('DD-MMM-YYYY');
+        usSpinnerService.stop("genericpluginDetail-spinner");
       }
     };
 
@@ -37,8 +37,8 @@ class ClinicalnotesDetailController {
 
     $scope.$on('$destroy', unsubscribe);
 
-    this.clinicalnotesLoad = clinicalnotesActions.get;
-    this.clinicalnotesLoad($stateParams.patientId, $stateParams.personalNoteIndex, $stateParams.source);
+    this.genericpluginLoad = genericpluginActions.get;
+    this.genericpluginLoad($stateParams.patientId, $stateParams.personalNoteIndex, $stateParams.source);
   
     //Edit Clinical Note
     
@@ -49,10 +49,10 @@ class ClinicalnotesDetailController {
       $scope.isEdit = true;
 
       $scope.currentUser = this.currentUser;
-      $scope.clinicalNoteEdit = Object.assign({}, this.clinicalNote);
+      $scope.genericpluginEdit = Object.assign({}, this.genericplugin);
       $scope.patient = this.currentPatient;
       
-      $scope.clinicalNoteEdit.dateCreated = new Date(this.clinicalNote.dateCreated).toISOString().slice(0, 10);
+      $scope.genericpluginEdit.dateCreated = new Date(this.genericplugin.dateCreated).toISOString().slice(0, 10);
     };
     this.cancelEdit = function () {
       $scope.isEdit = false;
@@ -72,7 +72,7 @@ class ClinicalnotesDetailController {
         
         this.personalNote = Object.assign(personalNote, $scope.personalNoteEdit);
         $scope.isEdit = false;
-        clinicalnotesActions.update($scope.patient.id, toUpdate);
+        genericpluginActions.update($scope.patient.id, toUpdate);
         setTimeout(function () {
           $state.go('personalNotes-detail', {
             patientId: $scope.patient.id,
@@ -84,10 +84,10 @@ class ClinicalnotesDetailController {
   }
 }
 
-const ClinicalnotesDetailComponent = {
-  template: templateClinicalnotesDetail,
-  controller: ClinicalnotesDetailController
+const GenericpluginDetailComponent = {
+  template: templateGenericpluginDetail,
+  controller: GenericpluginDetailController
 };
 
-ClinicalnotesDetailController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'clinicalnotesActions', 'serviceRequests', 'usSpinnerService'];
-export default ClinicalnotesDetailComponent;
+GenericpluginDetailController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'genericpluginActions', 'serviceRequests', 'usSpinnerService'];
+export default GenericpluginDetailComponent;

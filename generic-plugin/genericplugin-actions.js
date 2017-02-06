@@ -3,13 +3,13 @@ import * as types from '../../../constants/ActionTypes';
 
 export function all(patientId) {
   return {
-    types: [types.CLINICALNOTES, types.CLINICALNOTES_SUCCESS, types.CLINICALNOTES_ERROR],
+    types: [types.GENERIC_PLUGIN, types.GENERIC_PLUGIN_SUCCESS, types.GENERIC_PLUGIN_ERROR],
 
     shouldCallAPI: (state) => !state.contacts.response,
 
     config: {
       method: 'get',
-      url: '/api/patients/' + patientId + '/clinicalNotes'
+      url: '/api/patients/' + patientId + '/genericplugin'
     },
 
     meta: {
@@ -19,13 +19,13 @@ export function all(patientId) {
 }
 export function get(patientId, compositionId, source) {
   return {
-    types: [types.CLINICALNOTES_GET, types.CLINICALNOTES_GET_SUCCESS, types.CLINICALNOTES_GET_ERROR],
+    types: [types.GENERIC_PLUGIN_GET, types.GENERIC_PLUGIN_GET_SUCCESS, types.GENERIC_PLUGIN_GET_ERROR],
 
     shouldCallAPI: (state) => !state.contacts.response,
 
     config: {
       method: 'get',
-      url: '/api/patients/' + patientId + '/clinicalNotes/' + compositionId + '?source=' + source
+      url: '/api/patients/' + patientId + '/genericplugin/' + compositionId + '?source=' + source
     },
 
     meta: {
@@ -35,13 +35,13 @@ export function get(patientId, compositionId, source) {
 }
 export function create(patientId, composition) {
   return {
-    types: [types.CLINICALNOTES_CREATE, types.CLINICALNOTES_CREATE_SUCCESS, types.CLINICALNOTES_CREATE_ERROR],
+    types: [types.GENERIC_PLUGIN_CREATE, types.GENERIC_PLUGIN_CREATE_SUCCESS, types.GENERIC_PLUGIN_CREATE_ERROR],
 
     shouldCallAPI: (state) => !state.contacts.response,
 
     config: {
       method: 'post',
-      url: '/api/patients/' + patientId + '/clinicalNotes',
+      url: '/api/patients/' + patientId + '/genericplugin',
       data: composition
     },
 
@@ -52,13 +52,13 @@ export function create(patientId, composition) {
 }
 export function update(patientId, composition) {
   return {
-    types: [types.CLINICALNOTES_UPDATE, types.CLINICALNOTES_UPDATE_SUCCESS, types.CLINICALNOTES_UPDATE_ERROR],
+    types: [types.GENERIC_PLUGIN_UPDATE, types.GENERIC_PLUGIN_UPDATE_SUCCESS, types.GENERIC_PLUGIN_UPDATE_ERROR],
 
     shouldCallAPI: (state) => !state.contacts.response,
 
     config: {
       method: 'put',
-      url: '/api/patients/' + patientId + '/clinicalNotes',
+      url: '/api/patients/' + patientId + '/genericplugin',
       data: composition
     },
 
@@ -68,7 +68,7 @@ export function update(patientId, composition) {
   };
 }
 
-export default function clinicalnotesActions($ngRedux) {
+export default function genericpluginActions($ngRedux) {
   let actionCreator = {
     all, get, create, update
   };
@@ -76,4 +76,4 @@ export default function clinicalnotesActions($ngRedux) {
   return bindActionCreators(actionCreator, $ngRedux.dispatch);
 }
 
-clinicalnotesActions.$inject = ['$ngRedux'];
+genericpluginActions.$inject = ['$ngRedux'];

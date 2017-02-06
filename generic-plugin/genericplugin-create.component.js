@@ -14,15 +14,15 @@
   ~  limitations under the License.
 */
 
-let templateClinicalnotesCreate = require('./clinicalnotes-create.html');
+let templateGenericpluginCreate = require('./genericplugin-create.html');
 
-class ClinicalnotesCreateController {
-  constructor($scope, $state, $stateParams, $ngRedux, clinicalnotesActions, serviceRequests) {
+class GenericpluginCreateController {
+  constructor($scope, $state, $stateParams, $ngRedux, genericpluginActions, serviceRequests) {
     $scope.clinicalNote = {};
     $scope.clinicalNote.dateCreated = new Date().toISOString().slice(0, 10);
     
     this.setCurrentPageData = function (data) {
-      if (data.clinicalnotes.dataCreate !== null) {
+      if (data.genericplugin.dataCreate !== null) {
         this.goList();
       }
       if (data.patientsGet.data) {
@@ -34,7 +34,7 @@ class ClinicalnotesCreateController {
     };
 
     this.goList = function () {
-      $state.go('clinicalNotes', {
+      $state.go('genericplugin', {
         patientId: $stateParams.patientId,
         reportType: $stateParams.reportType,
         searchString: $stateParams.searchString,
@@ -59,7 +59,7 @@ class ClinicalnotesCreateController {
 
       if (clinicalNoteForm.$valid) {
 
-        $scope.clinicalnotesCreate(this.currentPatient.id, toAdd);
+        $scope.genericpluginCreate(this.currentPatient.id, toAdd);
       }
     }.bind(this);
 
@@ -69,14 +69,14 @@ class ClinicalnotesCreateController {
 
     $scope.$on('$destroy', unsubscribe);
 
-    $scope.clinicalnotesCreate = clinicalnotesActions.create;
+    $scope.genericpluginCreate = genericpluginActions.create;
   }
 }
 
-const ClinicalnotesCreateComponent = {
-  template: templateClinicalnotesCreate,
-  controller: ClinicalnotesCreateController
+const GenericpluginCreateComponent = {
+  template: templateGenericpluginCreate,
+  controller: GenericpluginCreateController
 };
 
-ClinicalnotesCreateController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'clinicalnotesActions', 'serviceRequests'];
-export default ClinicalnotesCreateComponent;
+GenericpluginCreateController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'genericpluginActions', 'serviceRequests'];
+export default GenericpluginCreateComponent;

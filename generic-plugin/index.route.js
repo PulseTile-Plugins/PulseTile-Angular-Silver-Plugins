@@ -5,12 +5,12 @@ function routeConfig($stateProvider, $urlRouterProvider) {
   console.log('routing test');
   $stateProvider
 
-    .state('clinicalNotes', {
-      url: '/patients/{patientId:int}/clinicalNotes?reportType&searchString&queryType',
+    .state('genericplugin', {
+      url: '/patients/{patientId:int}/genericplugin?reportType&searchString&queryType',
       views: {
         banner: {template: '<patients-banner-component></patients-banner-component>'},
         actions: {template: '<patients-sidebar-component></patients-sidebar-component>'},
-        main: {template: '<clinicalnotes-list-component></clinicalnotes-list-component>'}
+        main: {template: '<genericplugin-list-component></genericplugin-list-component>'}
       },
       breadcrumbs: [{
         title: 'Patient Listings',
@@ -19,17 +19,17 @@ function routeConfig($stateProvider, $urlRouterProvider) {
         title: 'Patient Summary',
         state: 'patients-summary'
       }, {
-        title: 'Clinical Notes',
-        state: 'clinicalNotes'
+        title: 'Generic',
+        state: 'genericplugin'
       }]
     })
-    .state('clinicalNotes-create', {
-      url: '/patients/{patientId:int}/clinicalNotes/create?reportType&searchString&queryType',
+    .state('genericplugin-create', {
+      url: '/patients/{patientId:int}/genericplugin/create?reportType&searchString&queryType',
       views: {
         banner: {template: '<patients-banner-component></patients-banner-component>'},
         actions: {template: '<patients-sidebar-component></patients-sidebar-component>'},
-        main: {template: '<personalnotes-list-component></personalnotes-list-component>'},
-        detail: {template: '<clinicalnotes-create-component></clinicalnotes-create-component>'}
+        main: {template: '<genericplugin-list-component></genericplugin-list-component>'},
+        detail: {template: '<genericplugin-create-component></genericplugin-create-component>'}
       },
       breadcrumbs: [{
         title: 'Patient Listings',
@@ -38,17 +38,17 @@ function routeConfig($stateProvider, $urlRouterProvider) {
         title: 'Patient Summary',
         state: 'patients-summary'
       }, {
-        title: 'Clinical Notes',
-        state: 'clinicalNotes'
+        title: 'Generic',
+        state: 'genericplugin'
       }]
     })
-    .state('clinicalNotes-detail', {
-      url: '/patients/{patientId:int}/clinicalNotes/{personalNoteIndex}?filter&page&reportType&searchString&queryType&source',
+    .state('genericplugin-detail', {
+      url: '/patients/{patientId:int}/genericplugin/{personalNoteIndex}?filter&page&reportType&searchString&queryType&source',
       views: {
         banner: {template: '<patients-banner-component></patients-banner-component>'},
         actions: {template: '<patients-sidebar-component></patients-sidebar-component>'},
-        main: {template: '<personalnotes-list-component></personalnotes-list-component>'},
-        detail: {template: '<clinicalnotes-detail-component></clinicalnotes-detail-component>'}
+        main: {template: '<genericplugin-list-component></genericplugin-list-component>'},
+        detail: {template: '<genericplugin-detail-component></genericplugin-detail-component>'}
       },
       params: { source: '{}' },
       breadcrumbs: [{
@@ -58,8 +58,8 @@ function routeConfig($stateProvider, $urlRouterProvider) {
         title: 'Patient Summary',
         state: 'patients-summary'
       }, {
-        title: 'Clinical Notes',
-        state: 'clinicalNotes'
+        title: 'Generic',
+        state: 'genericplugin'
       }]
     });
 }

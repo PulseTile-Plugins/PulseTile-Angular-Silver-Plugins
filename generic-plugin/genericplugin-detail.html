@@ -13,14 +13,14 @@
   ~  See the License for the specific language governing permissions and
   ~  limitations under the License.
 -->
-<div mc-full-panel mc-accordion mc-open-panel="clinicalNote" class="panel-group accordion">
-  <div class="panel panel-secondary" ng-if="!isEdit" ng-class="getOpenPanelClass('clinicalNote')">
+<div mc-full-panel mc-accordion mc-open-panel="genericplugin" class="panel-group accordion">
+  <div class="panel panel-secondary" ng-if="!isEdit" ng-class="getOpenPanelClass('genericplugin')">
     <div class="panel-heading">
       <div class="control-group right">
         <button class="btn btn-success btn-inverse btn-square hidden-xs hidden-sm btn-expand-panel" ng-click="changeFullPanel('details')"><i class="fa fa-expand"></i><i class="fa fa-compress"></i></button>
-        <button class="btn btn-success btn-inverse btn-square btn-toggle-rotate" ng-click="openPanel('clinicalNote')"><i class="fa fa-chevron-up"></i></button>
+        <button class="btn btn-success btn-inverse btn-square btn-toggle-rotate" ng-click="openPanel('genericplugin')"><i class="fa fa-chevron-up"></i></button>
       </div>
-      <h3 class="panel-title">Clinical Note</h3>
+      <h3 class="panel-title">Generic</h3>
     </div>
     <div class="panel-body">
       <div class="panel-body-inner">
@@ -29,27 +29,27 @@
 
             <div class="form-group">
               <label class="control-label">Type</label>
-              <div class="form-control-static">{{ $ctrl.clinicalNote.noteType }}</div>
+              <div class="form-control-static">{{ $ctrl.genericplugin.noteType }}</div>
             </div>
 
             <div class="form-group">
               <label class="control-label">Note</label>
-              <div class="form-control-static">{{ $ctrl.clinicalNote.notes }}</div>
+              <div class="form-control-static">{{ $ctrl.genericplugin.notes }}</div>
             </div>
 
             <div class="form-group">
               <label class="control-label">Author</label>
-              <div class="form-control-static">{{ $ctrl.clinicalNote.author }}</div>
+              <div class="form-control-static">{{ $ctrl.genericplugin.author }}</div>
             </div>
 
             <div class="form-group">
               <label class="control-label">Date</label>
-              <div class="form-control-static">{{ $ctrl.clinicalNote.dateCreated | date:'dd-MMM-yyyy' }}</div>
+              <div class="form-control-static">{{ $ctrl.genericplugin.dateCreated | date:'dd-MMM-yyyy' }}</div>
             </div>
 
             <div class="form-group">
               <label class="control-label">Source</label>
-              <div class="form-control-static">{{ $ctrl.clinicalNote.source }}</div>
+              <div class="form-control-static">{{ $ctrl.genericplugin.source }}</div>
             </div>
           </div>
         </div>
@@ -64,41 +64,41 @@
     </div>
   </div>
 
-  <div class="panel panel-secondary" ng-if="isEdit" ng-class="getOpenPanelClass('clinicalNote')">
+  <div class="panel panel-secondary" ng-if="isEdit" ng-class="getOpenPanelClass('genericplugin')">
     <div class="panel-heading">
       <div class="control-group right">
         <button class="btn btn-success btn-inverse btn-square hidden-xs hidden-sm btn-expand-panel" ng-click="changeFullPanel('details')"><i class="fa fa-expand"></i><i class="fa fa-compress"></i></button>
-        <button class="btn btn-success btn-inverse btn-square btn-toggle-rotate" ng-click="openPanel('clinicalNote')"><i class="fa fa-chevron-up"></i></button>
+        <button class="btn btn-success btn-inverse btn-square btn-toggle-rotate" ng-click="openPanel('genericplugin')"><i class="fa fa-chevron-up"></i></button>
       </div>
       <h3 class="panel-title">Edit Personal Note</h3>
     </div>
     <div class="panel-body">
       <div class="panel-body-inner">
-        <form name="clinicalNoteForm" class="form">
+        <form name="genericpluginForm" class="form">
           <div class="form-group-wrapper">
-            <div class="form-group" ng-class="{'has-error': (formSubmitted || clinicalNoteForm.noteType.$dirty) && clinicalNoteForm.noteType.$invalid, 'has-success': clinicalNoteForm.noteType.$valid && clinicalNoteForm.noteType.$dirty}">
+            <div class="form-group" ng-class="{'has-error': (formSubmitted || genericpluginForm.noteType.$dirty) && genericpluginForm.noteType.$invalid, 'has-success': genericpluginForm.noteType.$valid && genericpluginForm.noteType.$dirty}">
               <label for="noteType" class="control-label">Type</label>
               <div class="input-holder">
-                <input class="form-control input-sm" id="noteType" name="noteType" ng-model="clinicalNoteEdit.noteType" required />
+                <input class="form-control input-sm" id="noteType" name="noteType" ng-model="genericpluginEdit.noteType" required />
               </div>
-              <span class="help-block animate-fade" ng-show="formSubmitted && clinicalNoteForm.noteType.$error.required">You must enter a value.</span>
+              <span class="help-block animate-fade" ng-show="formSubmitted && genericpluginForm.noteType.$error.required">You must enter a value.</span>
             </div>
 
-            <div class="form-group" ng-class="{'has-error': (formSubmitted || clinicalNoteForm.notes.$dirty) && clinicalNoteForm.notes.$invalid, 'has-success': clinicalNoteForm.notes.$valid && clinicalNoteForm.notes.$dirty}">
+            <div class="form-group" ng-class="{'has-error': (formSubmitted || genericpluginForm.notes.$dirty) && genericpluginForm.notes.$invalid, 'has-success': genericpluginForm.notes.$valid && genericpluginForm.notes.$dirty}">
               <label for="notes" class="control-label">Note</label>
               <div class="input-holder">
-                <textarea class="form-control textarea-big input-sm" id="notes" name="notes" ng-model="clinicalNoteEdit.notes" required></textarea>
+                <textarea class="form-control textarea-big input-sm" id="notes" name="notes" ng-model="genericpluginEdit.notes" required></textarea>
               </div>
-              <span class="help-block animate-fade" ng-show="formSubmitted && clinicalNoteForm.note.$error.required">You must enter a value.</span>
+              <span class="help-block animate-fade" ng-show="formSubmitted && genericpluginForm.note.$error.required">You must enter a value.</span>
             </div>
-            <div class="form-group form-group-sm" ng-class="{'has-error': (formSubmitted || clinicalNoteForm.author.$dirty) && clinicalNoteForm.author.$invalid, 'has-success': clinicalNoteForm.author.$valid && clinicalNoteForm.author.$dirty}">
+            <div class="form-group form-group-sm" ng-class="{'has-error': (formSubmitted || genericpluginForm.author.$dirty) && genericpluginForm.author.$invalid, 'has-success': genericpluginForm.author.$valid && genericpluginForm.author.$dirty}">
               <label for="author" class="control-label">Author</label>
               <div class="input-holder">
-                <input type="text" class="form-control input-sm" id="author" name="author" ng-model="clinicalNoteEdit.author" required/>
+                <input type="text" class="form-control input-sm" id="author" name="author" ng-model="genericpluginEdit.author" required/>
               </div>
-              <span class="help-block animate-fade" ng-show="formSubmitted && clinicalNoteForm.author.$error.required">You must enter a value.</span>
+              <span class="help-block animate-fade" ng-show="formSubmitted && genericpluginForm.author.$error.required">You must enter a value.</span>
             </div>
-            <div class="form-group form-group-sm" ng-class="{'has-error': (formSubmitted || clinicalNoteForm.dateCreated.$dirty) && clinicalNoteForm.dateCreated.$invalid, 'has-success': clinicalNoteForm.dateCreated.$valid && clinicalNoteForm.dateCreated.$dirty}">
+            <div class="form-group form-group-sm" ng-class="{'has-error': (formSubmitted || genericpluginForm.dateCreated.$dirty) && genericpluginForm.dateCreated.$invalid, 'has-success': genericpluginForm.dateCreated.$valid && genericpluginForm.dateCreated.$dirty}">
               <label for="dateCreated" class="control-label">Date</label>
               <div class="inner-addon addon-left">
                 <div class="addon">
@@ -116,7 +116,7 @@
         <div class="wrap-control-group">
           <div class="control-group right">
             <button class="btn btn-danger" ng-click="$ctrl.cancelEdit()"><i class="fa fa-ban"></i> Cancel</button>
-            <button class="btn btn-success" ng-click="confirmEdit(clinicalNoteForm, clinicalNoteEdit)"><i class="fa fa-check"></i> Complete</button>
+            <button class="btn btn-success" ng-click="confirmEdit(genericpluginForm, genericpluginEdit)"><i class="fa fa-check"></i> Complete</button>
           </div>
         </div>
       </div>

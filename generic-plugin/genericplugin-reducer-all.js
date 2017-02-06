@@ -9,77 +9,77 @@ const INITIAL_STATE = {
   dataUpdate: null
 };
 
-export default function contacts(state = INITIAL_STATE, action) {
+export default function genericplugin(state = INITIAL_STATE, action) {
   const {payload} = action;
 
   var actions = {
-    [types.CLINICALNOTES]: (state) => {
+    [types.GENERIC_PLUGIN]: (state) => {
       return Object.assign({}, state, {
         isFetching: true,
         error: false
       });
     },
-    [types.CLINICALNOTES_SUCCESS]: (state) => {
+    [types.GENERIC_PLUGIN_SUCCESS]: (state) => {
       return Object.assign({}, state, {
         isFetching: false,
         data: payload.response
       });
     },
-    [types.CLINICALNOTES_ERROR]: (state) => {
+    [types.GENERIC_PLUGIN_ERROR]: (state) => {
       return Object.assign({}, state, {
         isFetching: false,
         error: payload.error
       });
     },
-    [types.CLINICALNOTES_GET]: (state) => {
+    [types.GENERIC_PLUGIN_GET]: (state) => {
       return Object.assign({}, state, {
         isFetching: true,
         error: false
       });
     },
-    [types.CLINICALNOTES_GET_SUCCESS]: (state) => {
+    [types.GENERIC_PLUGIN_GET_SUCCESS]: (state) => {
       return Object.assign({}, state, {
         isFetching: false,
         dataGet: payload.response
       });
     },
-    [types.CLINICALNOTES_GET_ERROR]: (state) => {
+    [types.GENERIC_PLUGIN_GET_ERROR]: (state) => {
       return Object.assign({}, state, {
         isFetching: false,
         error: payload.error
       });
     },
-    [types.CLINICALNOTES_CREATE]: (state) => {
+    [types.GENERIC_PLUGIN_CREATE]: (state) => {
       return Object.assign({}, state, {
         isFetching: true,
         error: false
       });
     },
-    [types.CLINICALNOTES_CREATE_SUCCESS]: (state) => {
+    [types.GENERIC_PLUGIN_CREATE_SUCCESS]: (state) => {
       return Object.assign({}, state, {
         isFetching: false,
         dataCreate: payload.response
       });
     },
-    [types.CLINICALNOTES_CREATE_ERROR]: (state) => {
+    [types.GENERIC_PLUGIN_CREATE_ERROR]: (state) => {
       return Object.assign({}, state, {
         isFetching: false,
         error: payload.error
       });
     },
-    [types.CLINICALNOTES_UPDATE]: (state) => {
+    [types.GENERIC_PLUGIN_UPDATE]: (state) => {
       return Object.assign({}, state, {
         isFetching: true,
         error: false
       });
     },
-    [types.CLINICALNOTES_UPDATE_SUCCESS]: (state) => {
+    [types.GENERIC_PLUGIN_UPDATE_SUCCESS]: (state) => {
       return Object.assign({}, state, {
         isFetching: false,
         dataUpdate: payload.response
       });
     },
-    [types.CLINICALNOTES_UPDATE_ERROR]: (state) => {
+    [types.GENERIC_PLUGIN_UPDATE_ERROR]: (state) => {
       return Object.assign({}, state, {
         isFetching: false,
         error: payload.error
