@@ -13,6 +13,7 @@
   ~  See the License for the specific language governing permissions and
   ~  limitations under the License.
 */
+import * as helper from './clinicalstatements-helper';
 
 let templateClinicalstatementsCreate = require('./clinicalstatements-create.html');
 let _ = require('underscore');
@@ -41,63 +42,6 @@ class ClinicalstatementsCreateController {
     };
 
     /**
-     * Take a supplied clinical phrase which could contain any of the following
-     * delimiters:
-     *   ~SUBJECT~
-     *   |VALUE|
-     *   {UNIT}
-     * and returns the phrase in a processed array form, where the fixed strings
-     * are string values and the variables are defined as an object representation
-     */
-    this.parsePhrase = function(phrase) {
-      let variables = { 
-        subject: /\~[^|{]*?\~/,
-        value:   /\|[^~{]*?\|/,
-        unit:    /\{[^~|]*?\}/
-      };
-
-      let parts = [phrase];
-
-      _.each(variables, (regex, type) => {
-        parts = _.flatten(_.map(parts, (p) => {
-          let match = regex.exec(p);
-          if(match) {
-            let before = p.slice(0,match.index);
-            let variable = { type, value: match[0].slice(1,-1) };
-            let after = p.substring(match.index + match[0].length);
-            return _.reject([before, variable, after], _.isEmpty);
-          }
-          else {
-            return p
-          }
-        }));
-      })
-      return parts;
-    }
-
-    /**
-     * Takes the UI phrases array (custom statements are strings and templated
-     * values are parsed objects) and converts in to a format to be sent ready
-     * to be sent to the api for persistence
-     */
-    this.transformPhrases = function(phrases) {
-      return _.map(phrases, (p) =>{
-        if(_.isString(p)) {
-          return {id: null, subject: p}
-        }
-        else {
-          let varHash = _
-            .chain(p.parsed)
-            .reject(_.isString)
-            .map((v)=>[v.type, v.value])
-            .object()
-            .value();
-          return Object.assign({id: p.id}, varHash);
-        }
-      });
-    }
-
-    /**
      * Listen for an enter key in the custom statement input box. When detected,
      * add a new statement and clear the statement content
      */
@@ -114,7 +58,7 @@ class ClinicalstatementsCreateController {
       }
       else {
         $scope.clinicalStatement.statements.push({
-          parsed: this.parsePhrase(result.phrase),
+          parsed: helper.parsePhrase(result.phrase),
           id:     result.id
         });
       }
@@ -165,7 +109,7 @@ class ClinicalstatementsCreateController {
 
     $scope.create = function (clinicalStatementForm, clinicalStatement) {
       $scope.formSubmitted = true;
-      let apiStatements = this.transformPhrases(clinicalStatement.statements);
+      let apiStatements = helper.transformPhrases(clinicalStatement.statements);
       console.log(apiStatements);
 
       let toAdd = {
