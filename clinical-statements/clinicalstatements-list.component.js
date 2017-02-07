@@ -18,7 +18,7 @@ let templateClinicalstatementsList = require('./clinicalstatements-list.html');
 
 class ClinicalstatementsListController {
   constructor($scope, $state, $stateParams, $ngRedux, clinicalstatementsActions, serviceRequests, usSpinnerService) {
-    serviceRequests.publisher('routeState', {state: $state.router.globals.current.views, breadcrumbs: $state.router.globals.current.breadcrumbs, name: 'patients-details'});
+    serviceRequests.publisher('routeState', {state: $state.router.globals.current.views, breadcrumbs: $state.router.globals.current.breadcrumbs, name: 'clinicalStatements-details'});
     serviceRequests.publisher('headerTitle', {title: 'Patients Details'});
 
     this.currentPage = 1;
@@ -29,20 +29,17 @@ class ClinicalstatementsListController {
 
 
     this.setCurrentPageData = function (data) {
-      // if (data.patientsGet.data) {
-      //   this.currentPatient = data.patientsGet.data;
-      // }
-      // if (data.clinicalstatements.data) {
-      //   this.clinicalStatements = data.clinicalstatements.data;
-      //   // for (var i = 0; i < this.clinicalStatements.length; i++) {
-      //   //   this.clinicalStatements[i].dateCreated = moment(this.clinicalStatements[i].dateCreated).format('DD-MMM-YYYY');
-      //   // }
-      // }
+      if (data.patientsGet.data) {
+        this.currentPatient = data.patientsGet.data;
+      }
+      if (data.clinicalStatements.data) {
+        this.clinicalStatements = data.clinicalStatements.data;
+      }
       usSpinnerService.stop("patientSummary-spinner");
 
-      // if (serviceRequests.currentUserData) {
-      //   this.currentUser = serviceRequests.currentUserData;
-      // }
+      if (serviceRequests.currentUserData) {
+        this.currentUser = serviceRequests.currentUserData;
+      }
     };
 
     this.toggleFilter = function () {
@@ -80,7 +77,6 @@ class ClinicalstatementsListController {
 
     this.search = function (row) {
       return (
-        row.statementType.toLowerCase().indexOf($scope.query.toLowerCase() || '') !== -1 ||
         row.author.toLowerCase().indexOf($scope.query.toLowerCase() || '') !== -1 ||
         row.dateCreated.toLowerCase().indexOf($scope.query.toLowerCase() || '') !== -1 ||
         row.source.toLowerCase().indexOf($scope.query.toLowerCase() || '') !== -1

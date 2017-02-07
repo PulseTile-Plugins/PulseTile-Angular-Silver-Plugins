@@ -162,7 +162,7 @@ class ClinicalstatementsCreateController {
     this.cancel = function () {
       this.goList();
     };
-    
+
     $scope.create = function (clinicalStatementForm, clinicalStatement) {
       $scope.formSubmitted = true;
       let apiStatements = this.transformPhrases(clinicalStatement.statements);

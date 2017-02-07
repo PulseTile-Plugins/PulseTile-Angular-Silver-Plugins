@@ -8,7 +8,6 @@
 <table class="table table-bordered table-striped table-hover">
   <thead>
     <tr>
-      <th>Type</th>
       <th>Author</th>
       <th>Date Created</th>
       <th>Source</th>
@@ -17,7 +16,6 @@
 
   <tbody>
     <tr dir-paginate="clinicalStatement in $ctrl.clinicalStatements | filter:$ctrl.search | itemsPerPage: 9" current-page="$ctrl.currentPage"  ng-click="$ctrl.go(clinicalStatement.sourceId, clinicalStatement.source)" ng-class="{info: $ctrl.selected(clinicalStatement.sourceId)}">
-      <td>{{ clinicalStatement.type }}</td>
       <td>{{ clinicalStatement.author }}</td>
       <td class="orderDateTime">{{ clinicalStatement.dateCreated }}</td>
       <td>{{ clinicalStatement.source }}</td>

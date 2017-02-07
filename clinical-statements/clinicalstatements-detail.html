@@ -1,52 +1,49 @@
-<div class="transbox">
-  <div class="innerTransbox">
-    <h3><strong>Clinical Statement</strong></h3>
-    <div class="form-horizontal text-left">
+<div mc-full-panel mc-accordion mc-open-panel="clinicalStatements" class="panel-group accordion">
+  <div class="panel panel-secondary" ng-if="getShowPanel('clinicalStatements') && !isEdit" ng-class="getOpenPanelClass('clinicalStatements')">
+    <div class="panel-heading">
+      <div class="control-group right">
+        <button class="btn btn-success btn-inverse btn-square hidden-xs hidden-sm btn-expand-panel" ng-click="changeFullPanel('details', 'clinicalStatements')"><i class="fa fa-expand"></i><i class="fa fa-compress"></i></button>
+        <button class="btn btn-success btn-inverse btn-square btn-toggle-rotate" ng-click="openPanel('clinicalStatements')"><i class="fa fa-chevron-up"></i></button>
+      </div>
+      <h3 class="panel-title">Clinical Statement</h3>
+    </div>
+    <div class="panel-body">
+      <div class="panel-body-inner">
+        <div class="form">
+          <div class="form-group-wrapper">
 
-      <div class="form-group">
-        <label class="control-label col-md-3">Type:</label>
-        <div class="col-md-9">
-          <div class="form-control-static">{{ $ctrl.clinicalStatement.type }}</div>
+            <div class="form-group">
+              <label class="control-label">Statements</label>
+              <div class="form-control-static">
+                <ul ng-repeat="statement in $ctrl.statementsText track by $index">
+                  <li>{{ statement }}</li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+              <label class="control-label">Author</label>
+              <div class="form-control-static">{{ $ctrl.clinicalStatements.author }}</div>
+            </div>
+
+            <div class="form-group">
+              <label class="control-label">Date</label>
+              <div class="form-control-static">{{ $ctrl.clinicalStatements.dateCreated }}</div>
+            </div>
+
+            <div class="form-group">
+              <label class="control-label">Source</label>
+              <div class="form-control-static">{{ $ctrl.clinicalStatements.source }}</div>
+            </div>
+          </div>
         </div>
       </div>
-
-      <div class="form-group">
-        <label class="control-label col-md-12">Statement:</label>
-        <div class="col-md-12">
-          <div class="form-control-static">{{ $ctrl.clinicalStatement.statement }}</div>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="control-label col-md-3">Author:</label>
-        <div class="col-md-9">
-          <div class="form-control-static">{{ $ctrl.clinicalStatement.author }}</div>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="control-label col-md-3">Date Created:</label>
-        <div class="col-md-9">
-          <div class="form-control-static">{{ $ctrl.dateCreated }}</div>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label class="control-label col-md-3">Source:</label>
-        <div class="col-md-9">
-          <div class="form-control-static">{{ $ctrl.clinicalStatement.source }}</div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-12">
-          <span class="patientSummary-spinner" us-spinner="{radius:20, width:8, length: 16}" spinner-key="clinicalStatementDetail-spinner" spinner-start-active="true"></span>
+      <div class="panel-control" ng-if="$ctrl.currentUser.permissions.indexOf('WRITE') !== -1">
+        <div class="wrap-control-group">
+          <div class="control-group right">
+            <button class="btn btn-success btn-inverse btn-edit" ng-click="$ctrl.edit();"><i class="fa fa-edit"></i> Edit</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-
-<div class="form-group   text-right">
-  <button class="btn btn-info" ng-click="$ctrl.edit();"><i class="fa fa-pencil"></i> Edit</button>
 </div>

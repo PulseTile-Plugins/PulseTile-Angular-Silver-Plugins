@@ -1,23 +1,20 @@
+import * as helper from './clinicalstatements-helper';
+
 let templateClinicalstatementsDetail = require('./clinicalstatements-detail.html');
+let _ = require('underscore');
 
 class ClinicalstatementsDetailController {
-  constructor($scope, $state, $stateParams, $ngRedux, clinicalstatementsActions, serviceRequests, ClinicalstatementsModal, usSpinnerService) {
-    serviceRequests.publisher('routeState', {state: $state.router.globals.current.views, name: 'patients-details'});
-    serviceRequests.publisher('headerTitle', {title: 'Patients Details'});
-
-    this.edit = function () {
-      ClinicalstatementsModal.openModal(this.currentPatient, {title: 'Edit Clinical Statement'}, this.clinicalStatement, this.currentUser);
-    };
+  constructor($scope, $state, $stateParams, $ngRedux, clinicalstatementsActions, serviceRequests, usSpinnerService) {
     
     this.setCurrentPageData = function (data) {
       if (data.patientsGet.data) {
         this.currentPatient = data.patientsGet.data;
       }
-      if (data.clinicalstatements.dataGet) {
-        this.clinicalStatement = data.clinicalstatements.dataGet;
-        this.dateCreated = moment(this.clinicalStatement.dateCreated).format('DD-MMM-YYYY');
-        usSpinnerService.stop("clinicalStatementDetail-spinner");
+      if (data.clinicalStatements.dataGet) {
+        this.clinicalStatements = data.clinicalStatements.dataGet;
+        this.statementsText = _.map(this.clinicalStatements.statements, helper.toText)
       }
+      usSpinnerService.stop("clinicalNoteDetail-spinner");
     };
 
     let unsubscribe = $ngRedux.connect(state => ({
@@ -28,6 +25,46 @@ class ClinicalstatementsDetailController {
 
     this.clinicalstatementsLoad = clinicalstatementsActions.get;
     this.clinicalstatementsLoad($stateParams.patientId, $stateParams.clinicalStatementIndex, $stateParams.source);
+  
+    //Edit Clinical Note
+    
+    $scope.isEdit = false;
+    
+    this.edit = function () {
+      $scope.isEdit = true;
+
+      $scope.currentUser = this.currentUser;
+      $scope.clinicalStatementsEdit = Object.assign({}, this.clinicalStatements);
+      $scope.patient = this.currentPatient;
+    };
+
+    this.cancelEdit = function () {
+      $scope.isEdit = false;
+    };
+
+    $scope.confirmEdit = function (personalNoteForm, personalNote) {
+      $scope.formSubmitted = true;
+
+      if (personalNoteForm.$valid) {
+        let toUpdate = {
+          noteType: personalNote.noteType,
+          notes: personalNote.notes,
+          author: personalNote.author,
+          source: personalNote.source,
+          sourceId: personalNote.sourceId
+        };
+        
+        this.personalNote = Object.assign(personalNote, $scope.personalNoteEdit);
+        $scope.isEdit = false;
+        personalnotesActions.update($scope.patient.id, toUpdate);
+        setTimeout(function () {
+          $state.go('personalNotes-detail', {
+            patientId: $scope.patient.id,
+            clinicalStatementIndex: personalNote.sourceId
+          });
+        }, 1000);
+      }
+    };
   }
 }
 
@@ -36,5 +73,5 @@ const ClinicalstatementsDetailComponent = {
   controller: ClinicalstatementsDetailController
 };
 
-ClinicalstatementsDetailController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'clinicalstatementsActions', 'serviceRequests', 'ClinicalstatementsModal', 'usSpinnerService'];
+ClinicalstatementsDetailController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'clinicalstatementsActions', 'serviceRequests', 'usSpinnerService'];
 export default ClinicalstatementsDetailComponent;
