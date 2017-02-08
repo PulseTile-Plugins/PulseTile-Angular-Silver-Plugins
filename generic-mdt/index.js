@@ -13,15 +13,11 @@
  ~  See the License for the specific language governing permissions and
  ~  limitations under the License.
  */
+import GenericMdtListComponent from './generic-mdt-list.component';
+import GenericMdtDetailComponent from './generic-mdt-detail.component';
+import GenericMdtCreateComponent from './generic-mdt-create.component';
 
-export const TRANSFEROFCARE = 'TRANSFEROFCARE';
-export const TRANSFEROFCARE_SUCCESS = 'TRANSFEROFCARE_SUCCESS';
-export const TRANSFEROFCARE_ERROR = 'TRANSFEROFCARE_ERROR';
-
-export const TRANSFEROFCARE_GET = 'TRANSFEROFCARE_GET';
-export const TRANSFEROFCARE_GET_SUCCESS = 'TRANSFEROFCARE_GET_SUCCESS';
-export const TRANSFEROFCARE_GET_ERROR = 'TRANSFEROFCARE_GET_ERROR';
-
-export const TRANSFEROFCARE_CREATE = 'TRANSFEROFCARE_CREATE';
-export const TRANSFEROFCARE_CREATE_SUCCESS = 'TRANSFEROFCARE_CREATE_SUCCESS';
-export const TRANSFEROFCARE_CREATE_ERROR = 'TRANSFEROFCARE_CREATE_ERROR';
+angular.module('ripple-ui.generic-mdt', [])
+  .component('genericMdtListComponent', GenericMdtListComponent)
+  .component('genericMdtDetailComponent', GenericMdtDetailComponent)
+  .component('genericMdtCreateComponent', GenericMdtCreateComponent);

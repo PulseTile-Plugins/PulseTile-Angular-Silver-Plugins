@@ -13,15 +13,11 @@
  ~  See the License for the specific language governing permissions and
  ~  limitations under the License.
  */
+import GenericpluginListComponent from './genericplugin-list.component';
+import GenericpluginCreateComponent from './genericplugin-create.component';
+import GenericpluginDetailComponent from './genericplugin-detail.component';
 
-export const TRANSFEROFCARE = 'TRANSFEROFCARE';
-export const TRANSFEROFCARE_SUCCESS = 'TRANSFEROFCARE_SUCCESS';
-export const TRANSFEROFCARE_ERROR = 'TRANSFEROFCARE_ERROR';
-
-export const TRANSFEROFCARE_GET = 'TRANSFEROFCARE_GET';
-export const TRANSFEROFCARE_GET_SUCCESS = 'TRANSFEROFCARE_GET_SUCCESS';
-export const TRANSFEROFCARE_GET_ERROR = 'TRANSFEROFCARE_GET_ERROR';
-
-export const TRANSFEROFCARE_CREATE = 'TRANSFEROFCARE_CREATE';
-export const TRANSFEROFCARE_CREATE_SUCCESS = 'TRANSFEROFCARE_CREATE_SUCCESS';
-export const TRANSFEROFCARE_CREATE_ERROR = 'TRANSFEROFCARE_CREATE_ERROR';
+angular.module('ripple-ui.genericplugin', [])
+  .component('genericpluginListComponent', GenericpluginListComponent)
+  .component('genericpluginCreateComponent', GenericpluginCreateComponent)
+  .component('genericpluginDetailComponent', GenericpluginDetailComponent);
