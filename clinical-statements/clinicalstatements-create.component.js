@@ -110,15 +110,12 @@ class ClinicalstatementsCreateController {
     $scope.create = function (clinicalStatementForm, clinicalStatement) {
       $scope.formSubmitted = true;
       let apiStatements = helper.transformPhrases(clinicalStatement.statements);
-      console.log(apiStatements);
-
       let toAdd = {
         statements: apiStatements,
         dateCreated: clinicalStatement.dateCreated,
         author: clinicalStatement.author,
         source: 'openehr'
       };
-
       if (clinicalStatementForm.$valid) {
         $scope.clinicalstatementsCreate(this.currentPatient.id, toAdd);
       }

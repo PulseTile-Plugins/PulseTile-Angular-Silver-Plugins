@@ -30,7 +30,7 @@
             <div class="row">
 
               <div class="col-xs-6">
-                <div class="form-group" ng-class="{'has-error': (formSubmitted || clinicalStatement.statements.$dirty) && clinicalStatement.statements.$invalid, 'has-success': clinicalStatement.statements.$valid && clinicalStatement.statements.$dirty}">
+                <div class="form-group">
                   <label for="statements" class="control-label">Search</label>
                   <div class="wrap-search wrap-header-search">
                     <div class="holder">
@@ -52,12 +52,12 @@
                       </tr>
                     </tbody>
                   </table>
-                  <dir-pagination-controls pagination-id="clinicalStatementSearch" on-page-change="$ctrl.pageChangeHandler($ctrl.newPageNumber)" boundary-links="false"></dir-pagination-controls>
+                  <dir-pagination-controls pagination-id="clinicalStatementSearch" boundary-links="false"></dir-pagination-controls>
                 </div>
               </div>
 
               <div class="col-xs-6">
-                <div class="form-group" ng-class="{'has-error': (formSubmitted || clinicalStatement.statements.$dirty) && clinicalStatement.statements.$invalid, 'has-success': clinicalStatement.statements.$valid && clinicalStatement.statements.$dirty}">
+                <div class="form-group" ng-class="{'has-error': (formSubmitted) && !clinicalStatement.statements.length, 'has-success': clinicalStatement.statements.length}">
                   <label for="statements" class="control-label">Statements</label>
                   <input type="text" class="form-control" placeholder="Add a custom statement" ng-keydown="$ctrl.keyDownCustomStatement($event)" ng-model="clinicalStatement.customStatement">
 
@@ -79,20 +79,20 @@
                       </tr>
                     </tbody>
                   </table> 
-                  <span class="help-block animate-fade" ng-show="formSubmitted && clinicalStatement.statements.$error.required">You must enter a value.</span>
+                  <span class="help-block animate-fade" ng-show="formSubmitted && !clinicalStatement.statements.length">You must enter a statement.</span>
                 </div>
               </div>
             </div>
 
-            <div class="form-group form-group-sm" ng-class="{'has-error': (formSubmitted || clinicalStatement.author.$dirty) && clinicalStatement.author.$invalid, 'has-success': clinicalStatement.author.$valid && clinicalStatement.author.$dirty}">
+            <div class="form-group form-group-sm" ng-class="{'has-error': (formSubmitted || clinicalStatementForm.author.$dirty) && clinicalStatementForm.author.$invalid, 'has-success': clinicalStatementForm.author.$valid && clinicalStatementForm.author.$dirty}">
               <label for="author" class="control-label">Author</label>
               <div class="input-holder">
                 <input type="text" class="form-control input-sm" id="author" name="author" ng-model="clinicalStatement.author" required/>
               </div>
-              <span class="help-block animate-fade" ng-show="formSubmitted && clinicalStatement.author.$error.required">You must enter a value.</span>
+              <span class="help-block animate-fade" ng-show="formSubmitted && clinicalStatementForm.author.$error.required">You must enter a value.</span>
             </div>
             
-            <div class="form-group form-group-sm" ng-class="{'has-error': (formSubmitted || clinicalStatement.dateCreated.$dirty) && clinicalStatement.dateCreated.$invalid, 'has-success': clinicalStatement.dateCreated.$valid && clinicalStatement.dateCreated.$dirty}">
+            <div class="form-group form-group-sm">
               <label for="dateCreated" class="control-label">Date</label>
               <div class="inner-addon addon-left">
                 <div class="addon">
