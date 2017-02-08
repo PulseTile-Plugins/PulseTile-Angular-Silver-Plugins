@@ -47,16 +47,15 @@ class ClinicalstatementsDetailController {
 
       if (personalNoteForm.$valid) {
         let toUpdate = {
-          noteType: personalNote.noteType,
-          notes: personalNote.notes,
-          author: personalNote.author,
-          source: personalNote.source,
-          sourceId: personalNote.sourceId
+          statements: apiStatements,
+          dateCreated: clinicalStatement.dateCreated,
+          author: clinicalStatement.author,
+          source: 'openehr'
         };
         
         this.personalNote = Object.assign(personalNote, $scope.personalNoteEdit);
         $scope.isEdit = false;
-        personalnotesActions.update($scope.patient.id, toUpdate);
+        clinicalstatementsActions.update($scope.patient.id, toUpdate);
         setTimeout(function () {
           $state.go('personalNotes-detail', {
             patientId: $scope.patient.id,
