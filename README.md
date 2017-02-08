@@ -45,9 +45,9 @@ export const ALLERGIES_UPDATE_ERROR = 'ALLERGIES_UPDATE_ERROR';
 7. Add components to src/app/index.js and src/app/index.route.js
    * You should register the component with Angular. To add functionality also the index.js and index.route.js files should be updated also. Within the index.js the component addition in general looks like this:
    ```
-  import ClinicalnotesListComponent from './rippleui/pages/clinical-notes/clinicalnotes-list.component';
+  import 'app/rippleui/pages/clinical-notes/index.js';
   
-  const app = angular.module('app', []).component('clinicalnotesListComponent', ClinicalnotesListComponent)
+  const app = angular.module('app', ['ripple-ui.clinicalnotes'])
    ```
    where ClinicalnotesListComponent is basically the AngularJS view name, and /rippleosi/pages/clinical-notes/ is the path to necessary for plugin files (listing and functionality of files for an example module are listed below);
    * index.route.js is used for routing, so the application will know where to look for plugin's pages. For example, this is general view of a single plugin's code for route file:
@@ -95,3 +95,6 @@ export const ALLERGIES_UPDATE_ERROR = 'ALLERGIES_UPDATE_ERROR';
 
 10. index.route.js
 *File with routes for core application*
+
+11. '../rippleui/pages/clinical-notes/index.js'
+*Module's main file where add components*
