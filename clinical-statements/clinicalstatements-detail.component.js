@@ -25,45 +25,6 @@ class ClinicalstatementsDetailController {
 
     this.clinicalstatementsLoad = clinicalstatementsActions.get;
     this.clinicalstatementsLoad($stateParams.patientId, $stateParams.clinicalStatementIndex, $stateParams.source);
-  
-    //Edit Clinical Note
-    
-    $scope.isEdit = false;
-    
-    this.edit = function () {
-      $scope.isEdit = true;
-
-      $scope.currentUser = this.currentUser;
-      $scope.clinicalStatementsEdit = Object.assign({}, this.clinicalStatements);
-      $scope.patient = this.currentPatient;
-    };
-
-    this.cancelEdit = function () {
-      $scope.isEdit = false;
-    };
-
-    $scope.confirmEdit = function (personalNoteForm, personalNote) {
-      $scope.formSubmitted = true;
-
-      if (personalNoteForm.$valid) {
-        let toUpdate = {
-          statements: apiStatements,
-          dateCreated: clinicalStatement.dateCreated,
-          author: clinicalStatement.author,
-          source: 'openehr'
-        };
-        
-        this.personalNote = Object.assign(personalNote, $scope.personalNoteEdit);
-        $scope.isEdit = false;
-        clinicalstatementsActions.update($scope.patient.id, toUpdate);
-        setTimeout(function () {
-          $state.go('personalNotes-detail', {
-            patientId: $scope.patient.id,
-            clinicalStatementIndex: personalNote.sourceId
-          });
-        }, 1000);
-      }
-    };
   }
 }
 
