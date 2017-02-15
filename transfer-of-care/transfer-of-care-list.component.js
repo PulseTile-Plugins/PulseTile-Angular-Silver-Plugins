@@ -16,7 +16,7 @@
 let templateTransferOfCareList = require('./transfer-of-care-list.html');
 
 class TransferOfCareListController {
-  constructor($scope, $state, $stateParams, $ngRedux, transferOfCareActions, serviceRequests, TransferOfCareModal, usSpinnerService) {
+  constructor($scope, $state, $stateParams, $ngRedux, transferOfCareActions, serviceRequests, usSpinnerService) {
     serviceRequests.publisher('routeState', {state: $state.router.globals.current.views, name: 'patients-details'});
     serviceRequests.publisher('headerTitle', {title: 'Patients Details'});
 
@@ -42,9 +42,9 @@ class TransferOfCareListController {
       });
     };
 
-    this.create = function () {
-      TransferOfCareModal.openModal(this.currentPatient, {title: ''}, {}, this.currentUser);
-    };
+    // this.create = function () {
+      // TransferOfCareModal.openModal(this.currentPatient, {title: ''}, {}, this.currentUser);
+    // };
 
     this.selected = function (transferOfCareIndex) {
       return transferOfCareIndex === $stateParams.transferOfCareIndex;
@@ -58,8 +58,8 @@ class TransferOfCareListController {
       if (data.transferOfCare.data) {
         this.transferofCareComposition = data.transferOfCare.data;
       }
-      if (data.user.data) {
-        this.currentUser = data.user.data;
+      if (serviceRequests.currentUserData) {
+        this.currentUser = serviceRequests.currentUserData;
       }
     };
 
@@ -79,5 +79,5 @@ const TransferOfCareListComponent = {
   controller: TransferOfCareListController
 };
 
-TransferOfCareListController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'transferOfCareActions', 'serviceRequests', 'TransferOfCareModal', 'usSpinnerService'];
+TransferOfCareListController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'transferOfCareActions', 'serviceRequests', 'usSpinnerService'];
 export default TransferOfCareListComponent;

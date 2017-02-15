@@ -31,7 +31,7 @@
   </thead>
 
   <tbody>
-    <tr dir-paginate="heightAndWeight in $ctrl.heightAndWeights| filter: $ctrl.search | itemsPerPage: 9 " current-page="$ctrl.currentPage"  ng-click="$ctrl.go(heightAndWeight.sourceId)" ng-class="{info: $ctrl.selected(heightAndWeight.sourceId)}">
+    <tr dir-paginate="heightAndWeight in $ctrl.heightAndWeights| filter: $ctrl.search | itemsPerPage: 10 " current-page="$ctrl.currentPage"  ng-click="$ctrl.go(heightAndWeight.sourceId)" ng-class="{info: $ctrl.selected(heightAndWeight.sourceId)}">
         <td>Height<br>Weight</td>
         <td>{{ heightAndWeight.height }}m<br>{{ heightAndWeight.weight }}kg</td>
         <td>{{ heightAndWeight.heightRecorded | date:'dd-MMM-yyyy' }}<br>{{ heightAndWeight.weightRecorded | date:'dd-MMM-yyyy' }}</td>
