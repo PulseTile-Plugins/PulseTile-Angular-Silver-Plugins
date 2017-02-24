@@ -25,7 +25,7 @@ const INITIAL_STATE = {
   dataUpdate: null
 };
 
-export default function contacts(state = INITIAL_STATE, action) {
+export default function clinicalstatements(state = INITIAL_STATE, action) {
   const {payload} = action;
 
   var actions = {
