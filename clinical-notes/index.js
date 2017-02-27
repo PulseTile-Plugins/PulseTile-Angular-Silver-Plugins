@@ -13,11 +13,29 @@
  ~  See the License for the specific language governing permissions and
  ~  limitations under the License.
  */
-import ClinicalnotesListComponent from './clinicalnotes-list.component';
-import ClinicalnotesCreateComponent from './clinicalnotes-create.component';
-import ClinicalnotesDetailComponent from './clinicalnotes-detail.component';
+import routes from "./index.route";
+import reducer from "./clinicalnotes-reducer-all";
+import clinicalnotesListComponent from './clinicalnotes-list.component';
+import clinicalnotesCreateComponent from './clinicalnotes-create.component';
+import clinicalnotesDetailComponent from './clinicalnotes-detail.component';
+import clinicalnotesActions from './clinicalnotes-actions';
 
-angular.module('ripple-ui.clinicalnotes', [])
-  .component('clinicalnotesListComponent', ClinicalnotesListComponent)
-  .component('clinicalnotesCreateComponent', ClinicalnotesCreateComponent)
-  .component('clinicalnotesDetailComponent', ClinicalnotesDetailComponent);
+export default {
+    "name": 'clinicalnotes',
+    "routes": routes,
+    "reducer": reducer,
+    "components": {
+        clinicalnotesListComponent,
+        clinicalnotesCreateComponent,
+        clinicalnotesDetailComponent
+    },
+    "actions": {
+        clinicalnotesActions
+    },
+    "sidebarInfo": {
+        name: 'clinicalNotes',
+        link: 'clinicalNotes',
+        linkDetail: 'clinicalNotes-detail',
+        title: 'Clinical Notes'
+    }
+}

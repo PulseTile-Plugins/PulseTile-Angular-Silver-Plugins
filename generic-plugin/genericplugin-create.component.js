@@ -73,10 +73,10 @@ class GenericpluginCreateController {
   }
 }
 
-const GenericpluginCreateComponent = {
+const genericpluginCreateComponent = {
   template: templateGenericpluginCreate,
   controller: GenericpluginCreateController
 };
 
 GenericpluginCreateController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'genericpluginActions', 'serviceRequests'];
-export default GenericpluginCreateComponent;
+export default genericpluginCreateComponent;

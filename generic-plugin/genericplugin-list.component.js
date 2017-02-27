@@ -104,10 +104,10 @@ class GenericpluginListController {
   }
 }
 
-const GenericpluginListComponent = {
+const genericpluginListComponent = {
   template: templateGenericpluginList,
   controller: GenericpluginListController
 };
 
 GenericpluginListController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'genericpluginActions', 'serviceRequests', 'usSpinnerService'];
-export default GenericpluginListComponent;
+export default genericpluginListComponent;

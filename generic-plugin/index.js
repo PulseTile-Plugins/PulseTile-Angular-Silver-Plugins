@@ -13,11 +13,29 @@
  ~  See the License for the specific language governing permissions and
  ~  limitations under the License.
  */
-import GenericpluginListComponent from './genericplugin-list.component';
-import GenericpluginCreateComponent from './genericplugin-create.component';
-import GenericpluginDetailComponent from './genericplugin-detail.component';
+import routes from "./index.route";
+import reducer from "./genericplugin-reducer-all";
+import genericpluginListComponent from './genericplugin-list.component';
+import genericpluginCreateComponent from './genericplugin-create.component';
+import genericpluginDetailComponent from './genericplugin-detail.component';
+import genericpluginActions from './genericplugin-actions';
 
-angular.module('ripple-ui.genericplugin', [])
-  .component('genericpluginListComponent', GenericpluginListComponent)
-  .component('genericpluginCreateComponent', GenericpluginCreateComponent)
-  .component('genericpluginDetailComponent', GenericpluginDetailComponent);
+export default {
+    "name": 'genericplugin',
+    "routes": routes,
+    "reducer": reducer,
+    "components": {
+        genericpluginListComponent,
+        genericpluginCreateComponent,
+        genericpluginDetailComponent
+    },
+    "actions": {
+        genericpluginActions
+    },
+    "sidebarInfo": {
+        name: 'genericplugin',
+        link: 'genericplugin',
+        linkDetail: 'genericplugin-detail',
+        title: 'Generic plugin'
+    }
+}

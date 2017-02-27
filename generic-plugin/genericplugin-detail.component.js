@@ -84,10 +84,10 @@ class GenericpluginDetailController {
   }
 }
 
-const GenericpluginDetailComponent = {
+const genericpluginDetailComponent = {
   template: templateGenericpluginDetail,
   controller: GenericpluginDetailController
 };
 
 GenericpluginDetailController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'genericpluginActions', 'serviceRequests', 'usSpinnerService'];
-export default GenericpluginDetailComponent;
+export default genericpluginDetailComponent;

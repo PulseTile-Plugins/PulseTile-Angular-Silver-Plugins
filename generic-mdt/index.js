@@ -13,11 +13,29 @@
  ~  See the License for the specific language governing permissions and
  ~  limitations under the License.
  */
-import GenericMdtListComponent from './generic-mdt-list.component';
-import GenericMdtDetailComponent from './generic-mdt-detail.component';
-import GenericMdtCreateComponent from './generic-mdt-create.component';
+import routes from "./index.route";
+import reducer from "./generic-mdt-reducer-all";
+import genericMdtListComponent from './generic-mdt-list.component';
+import genericMdtDetailComponent from './generic-mdt-detail.component';
+import genericMdtCreateComponent from './generic-mdt-create.component';
+import genericmdtActions from './generic-mdt-actions';
 
-angular.module('ripple-ui.generic-mdt', [])
-  .component('genericMdtListComponent', GenericMdtListComponent)
-  .component('genericMdtDetailComponent', GenericMdtDetailComponent)
-  .component('genericMdtCreateComponent', GenericMdtCreateComponent);
+export default {
+    "name": 'genericmdt',
+    "routes": routes,
+    "reducer": reducer,
+    "components": {
+        genericMdtListComponent,
+        genericMdtCreateComponent,
+        genericMdtDetailComponent
+    },
+    "actions": {
+        genericmdtActions
+    },
+    "sidebarInfo": {
+        name: 'mdt',
+        link: 'genericMdt',
+        linkDetail: 'genericMdt-detail',
+        title: 'MDT'
+    }
+}
