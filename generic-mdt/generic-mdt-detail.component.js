@@ -1,22 +1,62 @@
+/*
+ ~  Copyright 2016 Ripple Foundation C.I.C. Ltd
+ ~  
+ ~  Licensed under the Apache License, Version 2.0 (the "License");
+ ~  you may not use this file except in compliance with the License.
+ ~  You may obtain a copy of the License at
+ ~  
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+
+ ~  Unless required by applicable law or agreed to in writing, software
+ ~  distributed under the License is distributed on an "AS IS" BASIS,
+ ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ ~  See the License for the specific language governing permissions and
+ ~  limitations under the License.
+ */
+
 let templateGenericMdtDetail= require('./generic-mdt-detail.html');
 
 class GenericMdtDetailController {
-  constructor($scope, $state, $stateParams, $ngRedux, genericmdtActions, GenericMdtModal, usSpinnerService) {
+  constructor($scope, $state, $stateParams, $ngRedux, genericmdtActions, serviceRequests, usSpinnerService) {
+    $scope.isEdit = false;
+    
     this.edit = function () {
-      this.cancerMdt.timeOfMeeting = new Date(this.cancerMdt.timeOfMeeting);
-      GenericMdtModal.openModal(this.currentPatient, {title: 'Edit MDT'}, this.cancerMdt, this.currentUser);
-    };
+      $scope.isEdit = true;
 
+      $scope.mdtEdit = Object.assign({}, this.genericMdt);
+      $scope.mdtEdit.dateSubmitted = new Date();
+    };
+    
+    this.cancelEdit = function () {
+      $scope.isEdit = false;
+    };
+    
+    $scope.confirmEdit = function (mdtForm, genericMdt) {
+      $scope.formSubmitted = true;
+      if (mdtForm.$valid) {
+        $scope.isEdit = false;
+        this.genericMdt = Object.assign(this.genericMdt, $scope.mdtEdit);
+        $scope.genericmdtUpdate(this.currentPatient.id, this.genericMdt);
+      }
+    }.bind(this);
+
+    $scope.openDatepicker = function ($event, name) {
+      $event.preventDefault();
+      $event.stopPropagation();
+
+      $scope[name] = true;
+    };
+    
     this.setCurrentPageData = function (data) {
       if (data.patientsGet.data) {
         this.currentPatient = data.patientsGet.data;
       }
-      if (data.genericMdt.dataGet) {
-        this.cancerMdt = data.genericMdt.dataGet;
+      if (data.genericmdt.dataGet) {
+        this.genericMdt = data.genericmdt.dataGet;
         usSpinnerService.stop('mdtDetail-spinner');
       }
-      if (data.user.data) {
-        this.currentUser = data.user.data;
+      if (serviceRequests.currentUserData) {
+        this.currentUser = serviceRequests.currentUserData;
       }
     };
 
@@ -26,8 +66,9 @@ class GenericMdtDetailController {
 
     $scope.$on('$destroy', unsubscribe);
 
-    this.cancermdtLoad = genericmdtActions.get;
-    this.cancermdtLoad($stateParams.patientId, $stateParams.cancerMdtIndex);
+    this.genericmdtLoad = genericmdtActions.get;
+    this.genericmdtLoad($stateParams.patientId, $stateParams.genericMdtIndex);
+    $scope.genericmdtUpdate = genericmdtActions.update;
   }
 }
 
@@ -36,5 +77,5 @@ const GenericMdtDetailComponent = {
   controller: GenericMdtDetailController
 };
 
-GenericMdtDetailController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'genericmdtActions', 'GenericMdtModal', 'usSpinnerService'];
+GenericMdtDetailController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'genericmdtActions', 'serviceRequests', 'usSpinnerService'];
 export default GenericMdtDetailComponent;
