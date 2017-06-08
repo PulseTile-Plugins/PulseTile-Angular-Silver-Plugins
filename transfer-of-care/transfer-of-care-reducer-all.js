@@ -20,7 +20,8 @@ const INITIAL_STATE = {
   error: false,
   data: null,
   dataGet: null,
-  dataCreate: null
+  dataCreate: null,
+  dataUpdate: null
 };
 
 export default function transferOfCare(state = INITIAL_STATE, action) {
@@ -28,6 +29,8 @@ export default function transferOfCare(state = INITIAL_STATE, action) {
 
   var actions = {
     [types.TRANSFEROFCARE]: (state) => {
+      state.dataCreate = null;
+      state.dataUpdate = null;
       return Object.assign({}, state, {
         isFetching: true,
         error: false
@@ -45,6 +48,7 @@ export default function transferOfCare(state = INITIAL_STATE, action) {
         error: payload.error
       });
     },
+
     [types.TRANSFEROFCARE_GET]: (state) => {
       return Object.assign({}, state, {
         isFetching: true,
@@ -63,6 +67,7 @@ export default function transferOfCare(state = INITIAL_STATE, action) {
         error: payload.error
       });
     },
+
     [types.TRANSFEROFCARE_CREATE]: (state) => {
       return Object.assign({}, state, {
         isFetching: true,
@@ -76,6 +81,25 @@ export default function transferOfCare(state = INITIAL_STATE, action) {
       });
     },
     [types.TRANSFEROFCARE_CREATE_ERROR]: (state) => {
+      return Object.assign({}, state, {
+        isFetching: false,
+        error: payload.error
+      });
+    },
+
+    [types.TRANSFEROFCARE_UPDATE]: (state) => {
+      return Object.assign({}, state, {
+        isFetching: true,
+        error: false
+      });
+    },
+    [types.TRANSFEROFCARE_UPDATE_SUCCESS]: (state) => {
+      return Object.assign({}, state, {
+        isFetching: false,
+        dataUpdate: payload.response
+      });
+    },
+    [types.TRANSFEROFCARE_UPDATE_ERROR]: (state) => {
       return Object.assign({}, state, {
         isFetching: false,
         error: payload.error

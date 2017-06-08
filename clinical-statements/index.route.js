@@ -13,30 +13,52 @@
  ~  See the License for the specific language governing permissions and
  ~  limitations under the License.
  */
-routeConfig.$inject = ['$stateProvider', '$urlRouterProvider'];
+ routeConfig.$inject = ['$stateProvider', '$urlRouterProvider'];
 
-function routeConfig($stateProvider, $urlRouterProvider) {
-  $urlRouterProvider.otherwise('/search');
-  console.log('routing test');
-  $stateProvider
+ function routeConfig($stateProvider, $urlRouterProvider) {
+   var breadcrumbs = [{
+           title: 'Patient Listings',
+           state: 'patients-list'
+         }, {
+           title: 'Patient Summary',
+           state: 'patients-summary'
+         }, {
+           title: 'Clinical Statements',
+           state: 'clinicalstatements'
+         }];
 
-      .state('clinicalStatements', {
-        url: '/patients/{patientId:int}/clinicalStatements?reportType&searchString&queryType',
-        views: {
-          banner: {template: '<patients-banner-component></patients-banner-component>'},
-          actions: {template: '<patients-sidebar-component></patients-sidebar-component>'},
-          main: {template: '<clinicalStatements-list-component></clinicalStatements-list-component>'}
-        }
-      })
-      .state('clinicalStatements-detail', {
-        url: '/patients/{patientId:int}/clinicalStatements/{clinicalStatementIndex}?filter&page&reportType&searchString&queryType&source',
-        views: {
-          banner: {template: '<patients-banner-component></patients-banner-component>'},
-          actions: {template: '<patients-sidebar-component></patients-sidebar-component>'},
-          main: {template: '<clinicalStatements-list-component></clinicalStatements-list-component>'},
-          detail: {template: '<clinicalStatements-detail-component></clinicalStatements-detail-component>'}
-        }
-      });
-}
+   $stateProvider
 
-export default routeConfig;
+       .state('clinicalstatements', {
+         url: '/patients/{patientId:int}/clinicalStatements?reportType&searchString&queryType',
+         views: {
+           banner: {template: '<patients-banner-component></patients-banner-component>'},
+           actions: {template: '<patients-sidebar-component></patients-sidebar-component>'},
+           main: {template: '<clinicalstatements-list-component></clinicalstatements-list-component>'}
+         },
+         breadcrumbs: breadcrumbs
+       })
+       .state('clinicalstatements-create', {
+         url: '/patients/{patientId:int}/clinicalstatements/create?reportType&searchString&queryType',
+         views: {
+           banner: {template: '<patients-banner-component></patients-banner-component>'},
+           actions: {template: '<patients-sidebar-component></patients-sidebar-component>'},
+           main: {template: '<clinicalstatements-list-component></clinicalstatements-list-component>'},
+           detail: {template: '<clinicalstatements-create-component></clinicalstatements-create-component>'}
+         },
+         breadcrumbs: breadcrumbs
+       })
+       .state('clinicalstatements-detail', {
+         url: '/patients/{patientId:int}/clinicalStatements/{detailsIndex}?page&reportType&searchString&queryType',
+         views: {
+           banner: {template: '<patients-banner-component></patients-banner-component>'},
+           actions: {template: '<patients-sidebar-component></patients-sidebar-component>'},
+           main: {template: '<clinicalstatements-list-component></clinicalstatements-list-component>'},
+           detail: {template: '<clinicalstatements-detail-component></clinicalstatements-detail-component>'}
+         },
+         params: { source: '{}' },
+         breadcrumbs: breadcrumbs
+       });
+ }
+
+ export default routeConfig;

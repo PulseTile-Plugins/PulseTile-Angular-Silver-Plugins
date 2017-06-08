@@ -21,21 +21,20 @@ import genericMdtCreateComponent from './generic-mdt-create.component';
 import genericmdtActions from './generic-mdt-actions';
 
 export default {
-    "name": 'genericmdt',
-    "routes": routes,
-    "reducer": reducer,
-    "components": {
-        genericMdtListComponent,
-        genericMdtCreateComponent,
-        genericMdtDetailComponent
-    },
-    "actions": {
-        genericmdtActions
-    },
-    "sidebarInfo": {
-        name: 'mdt',
-        link: 'genericMdt',
-        linkDetail: 'genericMdt-detail',
-        title: 'MDT'
-    }
+  "name": 'genericmdt',
+  "routes": routes,
+  "reducer": reducer,
+  "components": {
+    genericMdtListComponent,
+    genericMdtCreateComponent,
+    genericMdtDetailComponent
+  },
+  "actions": {
+    genericmdtActions
+  },
+  "sidebarInfo": {
+    name: 'mdt',
+    link: 'genericMdt',
+    title: 'MDT'
+  }
 }

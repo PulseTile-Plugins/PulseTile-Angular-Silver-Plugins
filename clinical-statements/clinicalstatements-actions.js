@@ -20,7 +20,7 @@ export function all(patientId) {
   return {
     types: [types.CLINICALSTATEMENTS, types.CLINICALSTATEMENTS_SUCCESS, types.CLINICALSTATEMENTS_ERROR],
 
-    shouldCallAPI: (state) => !state.contacts.response,
+    shouldCallAPI: (state) => !state.clinicalstatements.response,
 
     config: {
       method: 'get',
@@ -32,15 +32,31 @@ export function all(patientId) {
     }
   };
 }
-export function get(patientId, compositionId, source) {
+export function get(patientId, sourceId) {
   return {
     types: [types.CLINICALSTATEMENTS_GET, types.CLINICALSTATEMENTS_GET_SUCCESS, types.CLINICALSTATEMENTS_GET_ERROR],
 
-    shouldCallAPI: (state) => !state.contacts.response,
+    shouldCallAPI: (state) => !state.clinicalstatements.response,
 
     config: {
       method: 'get',
-      url: '/api/patients/' + patientId + '/clinicalStatements/' + compositionId + '?source=' + source
+      url: '/api/patients/' + patientId + '/clinicalStatements/' + sourceId
+    },
+
+    meta: {
+      timestamp: Date.now()
+    }
+  };
+}
+export function getTags() {
+  return {
+    types: [types.CLINICALSTATEMENTS_TAGS, types.CLINICALSTATEMENTS_TAGS_SUCCESS, types.CLINICALSTATEMENTS_TAGS_ERROR],
+
+    shouldCallAPI: (state) => !state.clinicalstatements.response,
+
+    config: {
+      method: 'get',
+      url: 'api/contentStore/ts/tags'
     },
 
     meta: {
@@ -52,7 +68,7 @@ export function create(patientId, composition) {
   return {
     types: [types.CLINICALSTATEMENTS_CREATE, types.CLINICALSTATEMENTS_CREATE_SUCCESS, types.CLINICALSTATEMENTS_CREATE_ERROR],
 
-    shouldCallAPI: (state) => !state.contacts.response,
+    shouldCallAPI: (state) => !state.clinicalstatements.response,
 
     config: {
       method: 'post',
@@ -69,7 +85,7 @@ export function update(patientId, composition) {
   return {
     types: [types.CLINICALSTATEMENTS_UPDATE, types.CLINICALSTATEMENTS_UPDATE_SUCCESS, types.CLINICALSTATEMENTS_UPDATE_ERROR],
 
-    shouldCallAPI: (state) => !state.contacts.response,
+    shouldCallAPI: (state) => !state.clinicalstatements.response,
 
     config: {
       method: 'put',
@@ -91,7 +107,7 @@ export function query(prefix='', tag='') {
     
     config: {
       method: 'get',
-      url: '/api-clinicalContent/phrases?' + queryString.join('&')
+      url: '/api/contentStore/ts/phrases?' + queryString.join('&')
     },
 
     meta: {
@@ -102,7 +118,7 @@ export function query(prefix='', tag='') {
 
 export default function clinicalstatementsActions($ngRedux) {
   let actionCreator = {
-    all, get, create, update, query
+    all, get, create, update, query, getTags
   };
 
   return bindActionCreators(actionCreator, $ngRedux.dispatch);

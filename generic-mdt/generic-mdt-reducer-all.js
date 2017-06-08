@@ -13,7 +13,6 @@
  ~  See the License for the specific language governing permissions and
  ~  limitations under the License.
  */
-
 import * as types from '../../../constants/ActionTypes';
 
 const INITIAL_STATE = {
@@ -25,7 +24,7 @@ const INITIAL_STATE = {
   dataUpdate: null
 };
 
-export default function genericMdt(state = INITIAL_STATE, action) {
+export default function genericmdt(state = INITIAL_STATE, action) {
   const {payload} = action;
 
   var actions = {

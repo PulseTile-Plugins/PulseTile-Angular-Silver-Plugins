@@ -33,9 +33,8 @@ export default {
         clinicalstatementsActions
     },
     "sidebarInfo": {
-        name: 'clinicalstatements',
+        name: 'clinicalStatements',
         link: 'clinicalstatements',
-        linkDetail: 'clinicalstatements-detail',
         title: 'Clinical Statements'
     }
 }

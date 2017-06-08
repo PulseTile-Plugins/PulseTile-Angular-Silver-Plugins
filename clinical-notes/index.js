@@ -21,21 +21,20 @@ import clinicalnotesDetailComponent from './clinicalnotes-detail.component';
 import clinicalnotesActions from './clinicalnotes-actions';
 
 export default {
-    "name": 'clinicalnotes',
-    "routes": routes,
-    "reducer": reducer,
-    "components": {
-        clinicalnotesListComponent,
-        clinicalnotesCreateComponent,
-        clinicalnotesDetailComponent
-    },
-    "actions": {
-        clinicalnotesActions
-    },
-    "sidebarInfo": {
-        name: 'clinicalNotes',
-        link: 'clinicalNotes',
-        linkDetail: 'clinicalNotes-detail',
-        title: 'Clinical Notes'
-    }
+  "name": 'clinicalnotes',
+  "routes": routes,
+  "reducer": reducer,
+  "components": {
+    clinicalnotesListComponent,
+    clinicalnotesCreateComponent,
+    clinicalnotesDetailComponent
+  },
+  "actions": {
+    clinicalnotesActions
+  },
+  "sidebarInfo": {
+    name: 'clinicalNotes',
+    link: 'clinicalNotes',
+    title: 'Clinical Notes'
+  }
 }

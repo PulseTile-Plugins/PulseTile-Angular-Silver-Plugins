@@ -31,9 +31,8 @@ export default {
     heightAndWeightActions
   },
   "sidebarInfo": {
-    name: 'heightAndWeights',
-    link: 'heightAndWeights',
-    linkDetail: 'heightAndWeights-detail',
-    title: 'Height & Weight'
+    // name: 'heightAndWeights',
+    // link: 'heightAndWeights',
+    // title: 'Height & Weight'
   }
 }

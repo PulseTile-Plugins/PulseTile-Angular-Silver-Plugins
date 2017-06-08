@@ -13,7 +13,6 @@
  ~  See the License for the specific language governing permissions and
  ~  limitations under the License.
  */
-
 let templateGenericMdtDetail= require('./generic-mdt-detail.html');
 
 class GenericMdtDetailController {
@@ -39,13 +38,6 @@ class GenericMdtDetailController {
         $scope.genericmdtUpdate(this.currentPatient.id, this.genericMdt);
       }
     }.bind(this);
-
-    $scope.openDatepicker = function ($event, name) {
-      $event.preventDefault();
-      $event.stopPropagation();
-
-      $scope[name] = true;
-    };
     
     this.setCurrentPageData = function (data) {
       if (data.patientsGet.data) {
@@ -67,7 +59,7 @@ class GenericMdtDetailController {
     $scope.$on('$destroy', unsubscribe);
 
     this.genericmdtLoad = genericmdtActions.get;
-    this.genericmdtLoad($stateParams.patientId, $stateParams.genericMdtIndex);
+    this.genericmdtLoad($stateParams.patientId, $stateParams.detailsIndex);
     $scope.genericmdtUpdate = genericmdtActions.update;
   }
 }

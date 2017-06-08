@@ -16,24 +16,46 @@
 routeConfig.$inject = ['$stateProvider', '$urlRouterProvider'];
 
 function routeConfig($stateProvider, $urlRouterProvider) {
-  $stateProvider
+  var breadcrumbs = [{
+        title: 'Patient Listings',
+        state: 'patients-list'
+      }, {
+        title: 'Patient Summary',
+        state: 'patients-summary'
+      }, {
+        title: 'Transfers Of Care',
+        state: 'transferOfCare'
+      }];
 
+  $stateProvider
     .state('transferOfCare', {
-      url: '/patients/{patientId:int}/transfer-of-care-list?reportType&searchString&queryType',
+      url: '/patients/{patientId:int}/transfer-of-care?reportType&searchString&queryType',
       views: {
         banner: {template: '<patients-banner-component></patients-banner-component>'},
         actions: {template: '<patients-sidebar-component></patients-sidebar-component>'},
         main: {template: '<transfer-of-care-list-component></transfer-of-care-list-component>'}
-      }
+      },
+      breadcrumbs: breadcrumbs
     })
     .state('transferOfCare-detail', {
-      url: '/patients/{patientId:int}/transfer-of-care-detail/{transferOfCareIndex}?filter&page&reportType&searchString&queryType',
+      url: '/patients/{patientId:int}/transfer-of-care/{detailsIndex}?page&reportType&searchString&queryType',
       views: {
         banner: {template: '<patients-banner-component></patients-banner-component>'},
         actions: {template: '<patients-sidebar-component></patients-sidebar-component>'},
-        main: {template: '<transfer-of-care--list-component></transfer-of-care--list-component>'},
-        detail: {template: '<transfer-of-care--detail-component></transfer-of-care--detail-component>'}
-      }
+        main: {template: '<transfer-of-care-list-component></transfer-of-care-list-component>'},
+        detail: {template: '<transfer-of-care-detail-component></transfer-of-care-detail-component>'}
+      },
+      breadcrumbs: breadcrumbs
+    })
+    .state('transferOfCare-create', {
+      url: '/patients/{patientId:int}/transfer-of-care/create?reportType&searchString&queryType',
+      views: {
+        banner: {template: '<patients-banner-component></patients-banner-component>'},
+        actions: {template: '<patients-sidebar-component></patients-sidebar-component>'},
+        main: {template: '<transfer-of-care-list-component></transfer-of-care-list-component>'},
+        detail: {template: '<transfer-of-care-create-component></transfer-of-care-create-component>'}
+      },
+      breadcrumbs: breadcrumbs
     })
 }
 
