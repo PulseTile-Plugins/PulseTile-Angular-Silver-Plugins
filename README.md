@@ -3,7 +3,7 @@ Plugins are extentions to currenly built 'core' (with general modules, that can 
 
 #### Installation of the new Plugins to the application:  
 1. Run the following command within your command line: npm/bower install moduleName (Module name here stands for github url for external plugin)
-`bower i --save Org-Ripple-UI-Plugins` or `bower i --save Org-Ripple-UI-Plugins#1.0.0` for current plugin version
+`bower i --save PulseTile-Plugins` or `bower i --save PulseTile-Plugins#1.0.0` for current plugin version
 *We are downloading the module from external repository to root application directory*
 
 2. To copy files from node_modules/bower_components use: webpack.config.js --> CopyWebpackPlugin, change path in it's options { from: '', to: '' }
