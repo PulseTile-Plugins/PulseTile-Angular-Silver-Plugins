@@ -16,15 +16,50 @@
 let templateEventsDetail = require('./events-detail.html');
 
 class EventsDetailController {
-  constructor($scope, $state, $stateParams, $ngRedux, eventsActions, serviceRequests, usSpinnerService) {
+  constructor($scope, $state, $stateParams, $ngRedux, eventsActions, serviceRequests, usSpinnerService, serviceDateTimePicker) {
     var socket = io.connect('wss://' + window.location.hostname + ':' + 8070);
+    $scope.isEdit = false;
 
     this.currentUser = serviceRequests.currentUserData;
     $scope.currentUser = this.currentUser;
 
     $scope.formDisabled = true;
     $scope.messages = [];
+    $scope.startDateBeforeRender = serviceDateTimePicker.startDateBeforeRender;
 
+    /* istanbul ignore next */
+    this.edit = function () {
+      $scope.isEdit = true;
+      $scope.eventEdit = Object.assign({}, this.event);
+      $scope.eventEdit.dataCreated = new Date();
+    };
+    
+    /* istanbul ignore next */
+    this.cancelEdit = function () {
+      $scope.isEdit = false;
+    };
+
+    /* istanbul ignore next */
+    $scope.confirmEdit = function (eventForm, event) {
+      $scope.formSubmitted = true;
+
+      let toAdd = {
+        name: event.name,
+        type: event.type,
+        description: event.description,
+        dateTime: event.dateTime,
+        author: event.author
+      };
+
+      if (eventForm.$valid) {
+        $scope.isEdit = false;
+        this.event = Object.assign(this.event, event);
+
+        this.eventsUpdate(this.currentPatient.id, toAdd);
+      }
+    }.bind(this);
+
+    /* istanbul ignore next */
     this.setCurrentPageData = function (data) {
       /* istanbul ignore if  */
       if (data.patientsGet.data) {
@@ -43,12 +78,14 @@ class EventsDetailController {
       // }
     };
 
+    /* istanbul ignore next */
     window.onbeforeunload = function (e) {
       var dialogText = 'Please, close the appointment by pressing "End call" or the appointment will stay active!';
       e.returnValue = dialogText;
       return dialogText;
     };
 
+    /* istanbul ignore next */
     function getCookie(name) {
       var nameEQ = name + "=";
       var ca = document.cookie.split(';');
@@ -67,6 +104,7 @@ class EventsDetailController {
     $scope.$on('$destroy', unsubscribe);
 
     this.eventsLoad = eventsActions.get;
+    this.eventsUpdate = eventsActions.update;
     this.eventsLoad($stateParams.patientId, $stateParams.detailsIndex, $stateParams.source);
 
 
@@ -91,6 +129,7 @@ class EventsDetailController {
       console.log('ON appointment:init', $scope.showJoinAppointment);
     });
 
+    /* istanbul ignore next */
     function isDoctor(user) {
       return user && user.role == ROLE_DOCTOR;
     }
@@ -98,6 +137,7 @@ class EventsDetailController {
     $scope.patient =  this.currentPatient;
     $scope.appt =  this.appointment;
 
+    /* istanbul ignore next */
     $scope.canStartAppointment = function () {
       /* istanbul ignore if  */
       if (!$scope.isDoctor())
@@ -106,10 +146,12 @@ class EventsDetailController {
       return !$scope.isClosed && !$scope.showJoinAppointment;
     };
 
+    /* istanbul ignore next */
     $scope.isDoctor = function () {
       return currentUser && currentUser.role === 'IDCR';
     };
     
+    /* istanbul ignore next */
     $scope.canJoinAppointment = function () {
       /* istanbul ignore if  */
       if (!$scope.isPatient())
@@ -119,6 +161,7 @@ class EventsDetailController {
       return !$scope.isClosed && Boolean(canJoin) && canJoin == $scope.appt.sourceId;
     };
 
+    /* istanbul ignore next */
     $scope.isPatient = function () {
       return !$scope.isDoctor();
     };
@@ -129,6 +172,7 @@ class EventsDetailController {
     };
     timer();
     
+    /* istanbul ignore next */
     $scope.startAppointment = function () {
       console.log('startAppointment ===> ',  $scope.patient, $scope.appt);
       if (!$scope.appt) return;
@@ -141,6 +185,7 @@ class EventsDetailController {
       openPopup($scope.appt.sourceId);
     };
 
+    /* istanbul ignore next */
     $scope.joinAppointment = function () {
       // socket.emit('appointment:start', $scope.patient.id);
       openPopup($scope.appt.sourceId);
@@ -205,6 +250,7 @@ class EventsDetailController {
       console.log('onMessages ---> ', $scope.messages);
     }
 
+    /* istanbul ignore next */
     function onClose(data) {
       console.log('onClose ---> ', data);
       $scope.showJoinAppointment = null;
@@ -214,6 +260,7 @@ class EventsDetailController {
       }
     }
 
+    /* istanbul ignore next */
     function onStatus(data) {
       console.log('onStatus ---> ', data, data.appointmentId, ' == ', $stateParams.detailsIndex);
       if (data.appointmentId == $stateParams.detailsIndex) {
@@ -228,5 +275,5 @@ const EventsDetailComponent = {
   controller: EventsDetailController
 };
 
-EventsDetailController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'eventsActions', 'serviceRequests', 'usSpinnerService'];
+EventsDetailController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'eventsActions', 'serviceRequests', 'usSpinnerService', 'serviceDateTimePicker'];
 export default EventsDetailComponent;

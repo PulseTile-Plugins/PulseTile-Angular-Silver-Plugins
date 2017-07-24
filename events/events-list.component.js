@@ -33,12 +33,14 @@ class EventsListController {
     $scope.eventsFiltering = [];
     $scope.eventsTimeline = [];
 
+    /* istanbul ignore next */
     $scope.toggleFilterTimeline = function () {
       $scope.isFilterTimelineOpen = !$scope.isFilterTimelineOpen;
       serviceStateManager.setFilterTimeline({
       });
     };
     
+    /* istanbul ignore next */
     $scope.saveFilterTimelineParams = function () {
       serviceStateManager.setFilterTimeline({
         isOpen: $scope.isFilterTimelineOpen,
@@ -47,6 +49,7 @@ class EventsListController {
       });
     };
 
+    /* istanbul ignore next */
     $scope.refreshSlider = function () {
         $timeout(function () {
             $scope.$broadcast('rzSliderForceRender');
@@ -68,10 +71,12 @@ class EventsListController {
     //   });
     // }, 1000);
 
+    /* istanbul ignore next */
     this.isActiveCreate = function (typeCreate) {
       return this.partsStateName[this.partsStateName.length - 1] === typeCreate;
     };
 
+    /* istanbul ignore next */
     this.create = function (typeCreate) {
       /* istanbul ignore if  */
       if (typeof typeCreate !== "undefined") {
@@ -83,6 +88,7 @@ class EventsListController {
       }
     };
 
+    /* istanbul ignore next */
     this.go = function (id, source) {
       $scope.saveFilterTimelineParams()
       $state.go('events-detail', {
@@ -93,15 +99,16 @@ class EventsListController {
       });
     };
 
+    /* istanbul ignore next */
     this.setCurrentPageData = function (data) {
       /* istanbul ignore if  */
       if (data.events.data) {
         this.events = data.events.data;
       
-        serviceFormatted.filteringKeys = ['serviceTeam', 'type', 'dateOfAppointment'];
+        serviceFormatted.filteringKeys = ['name', 'type', 'dateTime'];
 
         this.eventsFilterSteps = $scope.getFilterArray(this.events);
-        serviceFormatted.formattingTablesDate(this.eventsFilterSteps, ['value', 'legend'], serviceFormatted.formatCollection.DDMMMMYYYY);
+        serviceFormatted.formattingTablesDate(this.eventsFilterSteps, ['dateCreated', 'dateTime'], serviceFormatted.formatCollection.DDMMMMYYYY);
         
         $scope.sliderRange = {
           minValue: filterTimelineData.rangeMin ? filterTimelineData.rangeMin : this.eventsFilterSteps[0].value,
@@ -128,12 +135,16 @@ class EventsListController {
         this.currentUser = serviceRequests.currentUserData;
       }
     };
+    
+    /* istanbul ignore next */
     $scope.formCollectionsEvents = function (events) {
       $scope.eventsFiltering = $scope.filterEvents(events);
       $scope.eventsTimeline = $scope.modificateEventsArr($scope.eventsFiltering);
 
-      serviceFormatted.formattingTablesDate($scope.eventsFiltering, ['dateOfAppointment'], serviceFormatted.formatCollection.DDMMMYYYY);
+      serviceFormatted.formattingTablesDate($scope.eventsFiltering, ['dateTime'], serviceFormatted.formatCollection.DDMMMYYYY);
     };
+
+    /* istanbul ignore next */
     $scope.filterEvents = function (events) {
       var newEvents = [];
       var minRange, maxRange;
@@ -143,7 +154,7 @@ class EventsListController {
         if (minRange && maxRange) {
           newEvents = _.chain(events)
               .filter(function (el, index, arr) {
-                var dateInSecongs = Date.parse(new Date(el.dateOfAppointment));
+                var dateInSecongs = Date.parse(new Date(el.dateTime));
 
                 return (minRange <= dateInSecongs && dateInSecongs <= maxRange);
               })
@@ -155,27 +166,29 @@ class EventsListController {
 
       return events;
     };
+
+    /* istanbul ignore next */
     $scope.getFilterArray = function (arr) {
       var countLabel = 3;
 
       arr = _.chain(arr)
             .filter(function (el, index, arr) {
-              return el.dateOfAppointment;
+              return el.dateTime;
             })
             .uniq(function (el) {
-              return el.dateOfAppointment;
+              return el.dateTime;
             })
             .sortBy(function (el) {
-              return el.dateOfAppointment;
+              return el.dateTime;
             })
             .map(function (el, index, arr) {
               var newEl = {
-                value: +(el.dateOfAppointment),
+                value: +(el.dateTime),
               }
               if (index % Math.round(arr.length / countLabel) === 0 ||
                   index === arr.length - 1) {
 
-                newEl.legend = el.dateOfAppointment;
+                newEl.legend = el.dateTime;
               }
               
               return newEl;
@@ -184,10 +197,12 @@ class EventsListController {
 
       return arr;
     };
+
+    /* istanbul ignore next */
     $scope.modificateEventsArr = function (arr) {
       arr = _.chain(arr)
             .sortBy(function (value) {
-              return value.dateOfAppointment;
+              return value.dateTime;
             })
             .reverse()
             .each(function (value, index) {
@@ -196,10 +211,9 @@ class EventsListController {
               } else {
                 value['sideDateInTimeline'] = 'left';
               }
-              value.type = 'Appointment';
             })
             .groupBy(function(value) {
-              return value.dateOfAppointment;
+              return value.dateTime;
             })
             .value();
 
