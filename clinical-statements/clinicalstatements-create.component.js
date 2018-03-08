@@ -20,6 +20,12 @@ let _ = require('underscore');
 
 class ClinicalstatementsCreateController {
   constructor($scope, $state, $stateParams, $ngRedux, clinicalstatementsActions, usSpinnerService, serviceRequests, serviceFormatted) {
+    $scope.actionLoadList = clinicalstatementsActions.all;
+    $scope.actionCreateDetail = clinicalstatementsActions.create;
+    this.clinicalstatementsTags = clinicalstatementsActions.getTags;
+    this.clinicalstatementsQuery = clinicalstatementsActions.query;
+
+    this.clinicalstatementsTags($stateParams.patientId, $stateParams.detailsIndex, $stateParams.source);
 
     this.clinicalStatement = $stateParams.source;
     $scope.statements = [];
@@ -27,49 +33,26 @@ class ClinicalstatementsCreateController {
     $scope.tags = [];
     $scope.clinicalTag = '';
     $scope.clinicalStatementCreate = {};
+    $scope.tempPhrases = {};
     $scope.clinicalStatementCreate.contentStore = {
       name: "ts",
       phrases: []
     };
     $scope.queryFilter = '';
-    $scope.openSearch = false;
-    
-    /* istanbul ignore next  */
-    this.setCurrentPageData = function (data) {
-      if (data.patientsGet.data) {
-        this.currentPatient = data.patientsGet.data;
-      }
-      if (serviceRequests.currentUserData) {
-        this.currentUser = serviceRequests.currentUserData;
-        $scope.clinicalStatementCreate.dateCreated = new Date();
-        $scope.clinicalStatementCreate.author = this.currentUser.email;
-      }
-      if (data.clinicalstatements.dataTags) {
-        $scope.tags = data.clinicalstatements.dataTags;
-      }
-      if (data.clinicalstatements.searchData && $scope.clinicalTag.length) {
-        $scope.statements = data.clinicalstatements.searchData;
-        $scope.statementsText = _.map($scope.statements, function (el, index) {
-          el.index = index;
-          return el;
-        });
-      }
-      usSpinnerService.stop("clinicalStatementDetail-spinner");
-    };
-
+    /* istanbul ignore next */
     this.getTag = function (tag) {
       $scope.clinicalTag = tag;
       $scope.queryFilter = '';
       this.clinicalstatementsQuery(null, tag);
     };
-
+    /* istanbul ignore next */
     this.removeTag = function () {
       $scope.clinicalTag = '';
       $scope.queryFilter = '';
       $scope.statements = [];
       $scope.statementsText = [];
     };
-
+    /* istanbul ignore next */
     this.goList = function () {
       $state.go('clinicalstatements', {
         patientId: $stateParams.patientId,
@@ -78,63 +61,93 @@ class ClinicalstatementsCreateController {
         queryType: $stateParams.queryType
       });
     };
+    /* istanbul ignore next */
     this.cancelEdit = function () {
       this.goList();
     };
 
+    /* istanbul ignore next */
     $scope.confirmEdit = function (clinicalStatementForm, clinicalStatement) {
       $scope.formSubmitted = true;
-      var userinput = $('#clinicalNote');
-      function cb(text) {
-        $scope.clinicalStatementCreate.text = text;
-      }
-      helper.setStructured(userinput, cb);  
-      
+      const tempEl = $('<div>');
+      tempEl.html($('#clinicalNote').html());
+      tempEl.find('.popover').remove();
+      $scope.clinicalStatementCreate.text = tempEl.text();
+
       $scope.statements.length = 0;
       $scope.statementsText = [];
       $scope.clinicalTag = '';
       
       if (clinicalStatementForm.$valid) {
-        this.clinicalstatementsCreate($stateParams.patientId, $scope.clinicalStatementCreate);
-        this.goList();
+        $scope.clinicalStatementCreate.contentStore.phrases = [];
+        for (var key in $scope.tempPhrases) {
+          if ($scope.tempPhrases[key]) {
+            $scope.clinicalStatementCreate.contentStore.phrases.push($scope.tempPhrases[key])
+          }
+        }
+        $scope.actionCreateDetail($stateParams.patientId, $scope.clinicalStatementCreate);
       }
     }.bind(this);
 
     serviceFormatted.filteringKeys2 = ['phrase'];
+    /* istanbul ignore next */
     $scope.queryFiltering = function (row) {
       return serviceFormatted.formattedSearching2(row, $scope.queryFilter);
     };
-    
+
+    $scope.filteringTags = function (item) {
+      const str = item ? `${item.toString().toLowerCase()} ` : '';
+
+      return str.indexOf($scope.queryFilter.replace(/&nbsp;/g, ' ').trim().toLowerCase() || '') !== -1
+    };
+
+    $scope.createMarkup = function (text, queryFilter) {
+      const regular = new RegExp(`(${queryFilter.replace(/&nbsp;/g, ' ').trim()})`, 'gi');
+      return text.replace(regular, '<b class="text-mark">$1</b>');
+    };
+
+    /* istanbul ignore next  */
+    this.setCurrentPageData = function (store) {
+      const state = store.clinicalstatements;
+
+      if (state.dataCreate !== null) {
+        $scope.actionLoadList($stateParams.patientId);
+        this.goList();
+      }
+      if (serviceRequests.currentUserData) {
+        this.currentUser = serviceRequests.currentUserData;
+        $scope.clinicalStatementCreate.dateCreated = new Date();
+        $scope.clinicalStatementCreate.author = this.currentUser.email;
+      }
+      if (state.dataTags) {
+        $scope.tags = state.dataTags;
+      }
+      if (state.searchData && $scope.clinicalTag.length) {
+        $scope.statements = state.searchData;
+        $scope.statementsText = _.map($scope.statements, function (el, index) {
+          el.index = index;
+          return el;
+        });
+      }
+      usSpinnerService.stop("clinicalStatementDetail-spinner");
+    };
+
     let unsubscribe = $ngRedux.connect(state => ({
       getStoreData: this.setCurrentPageData(state)
     }))(this);
-
     $scope.$on('$destroy', unsubscribe);
 
-    this.clinicalstatementsTags = clinicalstatementsActions.getTags;
-    this.clinicalstatementsQuery = clinicalstatementsActions.query;
-    this.clinicalstatementsCreate = clinicalstatementsActions.create;
-    this.clinicalstatementsTags($stateParams.patientId, $stateParams.detailsIndex, $stateParams.source);
-
-    // Add Dropdown to Input (select or change value)
-    $scope.cc = 0;
-    $scope.clickSelect = function () {
-      $scope.cc++;
-      if ($scope.cc == 2) {
-        // $(this).change();
-        $scope.cc = 0;
-      }
-    };
-
+    /* istanbul ignore next */
     $scope.changeSelect = function (index) {
       var userinput = jQuery('#clinicalNote');
       var statement = $scope.statementsText[index];
+      var tagId = new Date().getTime();
 
       var phraseItem = {id: statement.id, tag: $scope.clinicalTag};
-      $scope.clinicalStatementCreate.contentStore.phrases.push(phraseItem);
+      $scope.tempPhrases[tagId] = phraseItem;
       // Parse inputs
       var inner = statement.phrase.replace(/(.*)(\{|\|)([^~|])(\}|\|)(.*)/, '$1<span class="editable" contenteditable="false" data-arr-subject="$1" editable-text data-arr-unit="$3" data-arr-value="$5">$3</span>$5');
-      var html = '<span class="tag" data-id="' + index + '" data-phrase="' + statement.phrase + '" contenteditable="false">' + inner + '. <a class="remove" contenteditable="false"><i class="fa fa-close" contenteditable="false"></i></a></span>';
+      var html = '<span class="tag" data-tag-id="' + tagId + '" data-id="' + index + '" data-phrase="' + statement.phrase + '" contenteditable="false">' + inner + '. <a class="remove" contenteditable="false"><i class="fa fa-close" contenteditable="false"></i></a></span>';
 
       helper.pasteHtmlAtCaret(html, userinput);
       // Apply Editable
@@ -147,9 +160,9 @@ class ClinicalstatementsCreateController {
       });
 
       // Bind Remove to tag
-      helper.removeTags('#clinicalNote');
-
-      $scope.cc = -1;
+      helper.removeTags('#clinicalNote', function (tagId) {
+        $scope.tempPhrases[+tagId] = null;
+      });
     };
     
   }

@@ -58,13 +58,16 @@
           <td data-th="Source" ng-class="sortClass('source')" class="hidden-xs-cell"><span>{{ clinicalNote.source }}</span></td>
         </tr>
 
-        <tr ng-if="!$ctrl.clinicalNotes.length">
-          <td colspan="4"><span class="label label-default">No clinical notes</span></td>
+        <tr ng-if="!$ctrl.clinicalNotes || !$ctrl.clinicalNotes.length">
+          <td colspan="4">
+            <span class="label label-default" ng-if="!$ctrl.clinicalNotes">Loading...</span>
+            <span class="label label-default" ng-if="$ctrl.clinicalNotes && !$ctrl.clinicalNotes.length">No clinical notes</span>
+          </td>
         </tr>
       </tbody>
     </table>
 
-    <span class="patientSummary-spinner" us-spinner="{radius:20, width:8, length: 16}" spinner-key="patientSummary-spinner" spinner-start-active="true"></span>
+		<span class="patientSummary-spinner" us-spinner="{radius:20, width:8, length: 16}" spinner-key="list-spinner" spinner-start-active="true"></span>
 
     <div class="panel-control">
       <div class="wrap-control-group">

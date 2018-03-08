@@ -14,8 +14,11 @@
   ~  limitations under the License.
 */
 import {bindActionCreators} from 'redux';
-import * as types from '../../../constants/ActionTypes';
+import * as types from './action-types';
 
+export function clear() {
+  return { type: types.ORDERS__CLEAR }
+}
 export function all(patientId) {
   return {
     types: [types.ORDERS, types.ORDERS_SUCCESS, types.ORDERS_ERROR],
@@ -28,6 +31,7 @@ export function all(patientId) {
     },
 
     meta: {
+      patientId: patientId,
       timestamp: Date.now()
     }
   };
@@ -40,7 +44,7 @@ export function get(patientId, compositionId, source) {
 
     config: {
       method: 'get',
-      url: '/api/patients/' + patientId + '/laborders/' + compositionId + '?source=' + source
+      url: '/api/patients/' + patientId + '/laborders/' + compositionId
     },
 
     meta: {
@@ -84,7 +88,7 @@ export function suggestion(patientId, composition) {
 
 export default function ordersActions($ngRedux) {
   let actionCreator = {
-    all, get, create, suggestion
+    all, clear, get, create, suggestion
   };
 
   return bindActionCreators(actionCreator, $ngRedux.dispatch);

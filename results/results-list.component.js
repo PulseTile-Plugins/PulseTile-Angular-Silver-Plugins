@@ -19,9 +19,11 @@ class ResultsListController {
   constructor($scope, $state, $stateParams, $ngRedux, resultsActions, serviceRequests, usSpinnerService, serviceFormatted) {
     serviceRequests.publisher('routeState', {state: $state.router.globals.current.views, breadcrumbs: $state.router.globals.current.breadcrumbs, name: 'patients-details'});
     serviceRequests.publisher('headerTitle', {title: 'Patients Details'});
+    resultsActions.clear();
+    this.actionLoadList = resultsActions.all;
 
     this.isShowExpandBtn = $state.router.globals.$current.name !== 'results';
-
+    /* istanbul ignore next */
     this.go = function (id, source) {
       $state.go('results-detail', {
         patientId: $stateParams.patientId,
@@ -30,26 +32,36 @@ class ResultsListController {
         source: source
       });
     };
+    /* istanbul ignore next */
+    this.setCurrentPageData = function (store) {
+      const state = store.results;
+      const pagesInfo = store.pagesInfo;
+      const pluginName = 'results';
 
-    this.setCurrentPageData = function (data) {
-      if (data.results.data) {
-        this.results = data.results.data;
+      if (serviceRequests.checkIsCanLoadingListData(state, pagesInfo, pluginName, $stateParams.patientId)) {
+        this.actionLoadList($stateParams.patientId);
+        serviceRequests.setPluginPage(pluginName);
+        usSpinnerService.spin('list-spinner');
+      }
+      if (state.data) {
+        this.results = state.data;
 
         serviceFormatted.formattingTablesDate(this.results, ['dateCreated', 'sampleTaken'], serviceFormatted.formatCollection.DDMMMYYYY);
         serviceFormatted.filteringKeys = ['sampleTaken', 'testName', 'dateCreated', 'source'];
-        
-        usSpinnerService.stop('resultsSummary-spinner');
+      }
+      if (state.data || state.error) {
+        usSpinnerService.stop('list-spinner');
+        setTimeout(() => { usSpinnerService.stop('list-spinner') }, 0);
+      }
+      if (serviceRequests.currentUserData) {
+        this.currentUser = serviceRequests.currentUserData;
       }
     };
 
     let unsubscribe = $ngRedux.connect(state => ({
       getStoreData: this.setCurrentPageData(state)
     }))(this);
-
     $scope.$on('$destroy', unsubscribe);
-
-    this.resultsLoad = resultsActions.all;
-    this.resultsLoad($stateParams.patientId);
   }
 }
 

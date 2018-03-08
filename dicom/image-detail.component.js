@@ -13,13 +13,15 @@
   ~  See the License for the specific language governing permissions and
   ~  limitations under the License.
 */
-let templateImageDetail= require('./image-detail.html');
-import cornerstoneJS from '../../../../cornerstone/cornerstone';
-import cornerstoneToolsJS from '../../../../cornerstone/cornerstoneTools';
+import { httpSetTokenToCookie } from '../../../../../helpers/httpMiddleware';
+
+let templateImageDetail = require('./image-detail.html');
+import { httpHandleErrors } from '../../../../handle-errors/handle-errors-actions';
+import cornerstoneJS from '../../../../../../cornerstone/cornerstone';
+import cornerstoneToolsJS from '../../../../../../cornerstone/cornerstoneTools';
 
 class ImageDetailController {
   constructor($scope, $state, $stateParams, $ngRedux, serviceActions, serviceRequests, usSpinnerService) {
-    
     $scope.series = [];
     $scope.isMove = false;
     $scope.isFade = false;
@@ -36,17 +38,23 @@ class ImageDetailController {
           findFirstInstanceId(seriesIds[i], i);
       }
       usSpinnerService.stop('patientSummary-spinner');
-    });
-
+    }).then(response => {
+      httpSetTokenToCookie(response.data);
+      return response;
+    }).catch(function (err) {$ngRedux.dispatch(httpHandleErrors(err))});
+    /* istanbul ignore next */
     $scope.getURLtoImage = function(id) {
-      return 'http://46.101.95.245/orthanc/instances/' + id + '/preview';
+      return `${window.location.protocol}//46.101.95.245/orthanc/instances/${id}/preview`;
     };
 
     /* istanbul ignore next  */
     var findFirstInstanceId = function (seriesId, index) {
       serviceActions.getInstanceId($stateParams.patientId, seriesId, $stateParams.source).then(function (result) {
         $scope.instanceIds[index] = result.data.instanceId;
-      });
+      }).then(response => {
+        httpSetTokenToCookie(response.data);
+        return response;
+      }).catch(function (err) {$ngRedux.dispatch(httpHandleErrors(err))});;
     };
 
     /* istanbul ignore next  */
@@ -55,26 +63,31 @@ class ImageDetailController {
         $scope.series[index] = result.data;
         $scope.series[index].seriesDate = moment($scope.series[index].seriesDate).format('DD-MMM-YYYY');
         $scope.series[index].seriesTime = moment($scope.series[index].seriesTime).format('h:mma');
-      });
+      }).then(response => {
+        httpSetTokenToCookie(response.data);
+        return response;
+      }).catch(function (err) {$ngRedux.dispatch(httpHandleErrors(err))});;
     };
 
     /* istanbul ignore next  */
     function getImgBlock() {
       return $('#dicomImage').get(0);
     }
-    
+    /* istanbul ignore next */
     $scope.zoomIn = function (ev) {
       var element = getImgBlock();
       var viewport = cornerstone.getViewport(element);
       viewport.scale += 0.25;
       cornerstone.setViewport(element, viewport);
     };
+    /* istanbul ignore next */
     $scope.zoomOut = function (ev) {
       var element = getImgBlock();
       var viewport = cornerstone.getViewport(element);
       viewport.scale -= 0.25;
       cornerstone.setViewport(element, viewport);
     };
+    /* istanbul ignore next */
     $scope.moveImg = function (ev) {
       $scope.isMove = !$scope.isMove;
       
@@ -90,7 +103,7 @@ class ImageDetailController {
       cornerstoneTools.mouseInput.enable(element);
       cornerstoneTools.pan.activate(element, 1);
     };
-
+    /* istanbul ignore next */
     $scope.fadeImg = function (ev) {
       $scope.isFade = !$scope.isFade;
 

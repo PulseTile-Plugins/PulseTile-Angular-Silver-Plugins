@@ -17,17 +17,26 @@ let templateOrdersDetail = require('./orders-detail.html');
 
 class OrdersDetailController {
   constructor($scope, $state, $stateParams, $ngRedux, ordersActions, usSpinnerService, serviceRequests) {
+    this.actionLoadList = ordersActions.all;
+    this.actionLoadDetail = ordersActions.get;
 
-    this.setCurrentPageData = function (data) {
-      if (data.orders.dataGet) {
-        this.order = data.orders.dataGet;
-        usSpinnerService.stop('ordersDetail-spinner');
-      }
-      if (data.patientsGet.data) {
-        this.currentPatient = data.patientsGet.data;
+    usSpinnerService.spin('detail-spinner');
+    this.actionLoadDetail($stateParams.patientId, $stateParams.detailsIndex);
+    /* istanbul ignore next */
+    this.setCurrentPageData = function (store) {
+      const state = store.orders;
+      const { detailsIndex } = $stateParams;
+
+      // Get Details data
+      if (state.dataGet) {
+        this.order = state.dataGet;
+        (detailsIndex === state.dataGet.sourceId) ? usSpinnerService.stop('detail-spinner') : null;
       }
       if (serviceRequests.currentUserData) {
         this.currentUser = serviceRequests.currentUserData;
+      }
+      if (state.error) {
+        usSpinnerService.stop('detail-spinner');
       }
     };
 
@@ -36,9 +45,6 @@ class OrdersDetailController {
     }))(this);
 
     $scope.$on('$destroy', unsubscribe);
-
-    this.ordersLoad = ordersActions.get;
-    this.ordersLoad($stateParams.patientId, $stateParams.detailsIndex, $stateParams.source);
   }
 }
 

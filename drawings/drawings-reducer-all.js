@@ -13,14 +13,18 @@
  ~  See the License for the specific language governing permissions and
  ~  limitations under the License.
  */
-import * as types from '../../../constants/ActionTypes';
+import * as types from './action-types';
 
 const INITIAL_STATE = {
   isFetching: false,
   error: false,
   data: null,
   dataGet: null,
-  dataCreate: null
+  isGetFetching: false,
+  dataCreate: null,
+  dataUpdate: null,
+  isUpdateProcess: false,
+  patientId: null
 };
 
 export default function drawing(state = INITIAL_STATE, action) {
@@ -36,9 +40,13 @@ export default function drawing(state = INITIAL_STATE, action) {
       });
     },
     [types.DRAWINGS_SUCCESS]: (state) => {
+      if (state.isUpdateProcess) {
+        state.dataGet = null;
+      }
       return Object.assign({}, state, {
         isFetching: false,
-        data: payload.response
+        data: payload.response,
+        patientId: payload.meta.patientId,
       });
     },
     [types.DRAWINGS_ERROR]: (state) => {
@@ -47,24 +55,37 @@ export default function drawing(state = INITIAL_STATE, action) {
         error: payload.error
       });
     },
+    [types.DRAWINGS__CLEAR]: (state) => {
+      return Object.assign({}, state, {
+        error: false,
+      });
+    },
+
     [types.DRAWINGS_GET]: (state) => {
+      state.dataUpdate = null;
       return Object.assign({}, state, {
         isFetching: true,
+        isGetFetching: true,
         error: false
       });
     },
     [types.DRAWINGS_GET_SUCCESS]: (state) => {
       return Object.assign({}, state, {
+        isUpdateProcess: false,
         isFetching: false,
+        isGetFetching: false,
         dataGet: payload.response
       });
     },
     [types.DRAWINGS_GET_ERROR]: (state) => {
       return Object.assign({}, state, {
+        isUpdateProcess: false,
         isFetching: false,
+        isGetFetching: false,
         error: payload.error
       });
     },
+
     [types.DRAWINGS_CREATE]: (state) => {
       return Object.assign({}, state, {
         isFetching: true,
@@ -78,6 +99,26 @@ export default function drawing(state = INITIAL_STATE, action) {
       });
     },
     [types.DRAWINGS_CREATE_ERROR]: (state) => {
+      return Object.assign({}, state, {
+        isFetching: false,
+        error: payload.error
+      });
+    },
+
+    [types.DRAWINGS_UPDATE]: (state) => {
+      return Object.assign({}, state, {
+        isUpdateProcess: true,
+        isFetching: true,
+        error: false
+      });
+    },
+    [types.DRAWINGS_UPDATE_SUCCESS]: (state) => {
+      return Object.assign({}, state, {
+        isFetching: false,
+        dataUpdate: payload.response
+      });
+    },
+    [types.DRAWINGS_UPDATE_ERROR]: (state) => {
       return Object.assign({}, state, {
         isFetching: false,
         error: payload.error

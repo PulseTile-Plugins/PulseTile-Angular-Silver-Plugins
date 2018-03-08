@@ -19,6 +19,8 @@ import vitalsListComponent from './vitals-list.component';
 import vitalsCreateComponent from './vitals-create.component';
 import vitalsDetailComponent from './vitals-detail.component';
 import vitalsActions from './vitals-actions';
+import ServiceVitalsSigns from "./serviceVitalsSigns";
+import './directives.js';
 
 export default {
   "name": 'vitals',
@@ -29,6 +31,10 @@ export default {
     vitalsCreateComponent,
     vitalsDetailComponent
   },
+  "services": {
+    serviceVitalsSigns: ServiceVitalsSigns
+  },
+  "modules": ['ripple-ui.vitalsDirectives'],
   "actions": {
     vitalsActions
   },

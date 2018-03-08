@@ -19,10 +19,12 @@ class ReferralsListController {
   constructor($scope, $state, $stateParams, $ngRedux, referralsActions, serviceRequests, usSpinnerService, serviceFormatted) {
     serviceRequests.publisher('routeState', {state: $state.router.globals.current.views, breadcrumbs: $state.router.globals.current.breadcrumbs, name: 'patients-details'});
     serviceRequests.publisher('headerTitle', {title: 'Patients Details'});
+    referralsActions.clear();
+    this.actionLoadList = referralsActions.all;
 
 		this.isShowCreateBtn = $state.router.globals.$current.name !== 'referrals-create';
 		this.isShowExpandBtn = $state.router.globals.$current.name !== 'referrals';
-
+    /* istanbul ignore next */
     this.go = function (id) {
       $state.go('referrals-detail', {
         patientId: $stateParams.patientId,
@@ -30,24 +32,32 @@ class ReferralsListController {
         page: $scope.currentPage || 1
       });
     };
-    
+    /* istanbul ignore next */
     this.create = function () {
       $state.go('referrals-create', {
         patientId: $stateParams.patientId
       });
     };
+    /* istanbul ignore next */
+    this.setCurrentPageData = function (store) {
+      const state = store.referrals;
+      const pagesInfo = store.pagesInfo;
+      const pluginName = 'referrals';
 
-    this.setCurrentPageData = function (data) {
-      if (data.patientsGet.data) {
-        this.currentPatient = data.patientsGet.data;
-        usSpinnerService.stop('patientSummary-spinner');
+      if (serviceRequests.checkIsCanLoadingListData(state, pagesInfo, pluginName, $stateParams.patientId)) {
+        this.actionLoadList($stateParams.patientId);
+        serviceRequests.setPluginPage(pluginName);
+        usSpinnerService.spin('list-spinner');
       }
-
-      if (data.referrals.data) {
-        this.referrals = data.referrals.data;
+      if (state.data) {
+        this.referrals = state.data;
 
         serviceFormatted.formattingTablesDate(this.referrals, ['dateOfReferral'], serviceFormatted.formatCollection.DDMMMYYYY);
         serviceFormatted.filteringKeys = ['dateOfReferral', 'referralFrom', 'referralTo', 'source'];
+      }
+      if (state.data || state.error) {
+        usSpinnerService.stop('list-spinner');
+        setTimeout(() => { usSpinnerService.stop('list-spinner') }, 0);
       }
       if (serviceRequests.currentUserData) {
         this.currentUser = serviceRequests.currentUserData;
@@ -57,11 +67,7 @@ class ReferralsListController {
 		let unsubscribe = $ngRedux.connect(state => ({
       getStoreData: this.setCurrentPageData(state)
     }))(this);
-
     $scope.$on('$destroy', unsubscribe);
-
-    this.referralsLoad = referralsActions.all;
-    this.referralsLoad($stateParams.patientId);
   }
 }
 

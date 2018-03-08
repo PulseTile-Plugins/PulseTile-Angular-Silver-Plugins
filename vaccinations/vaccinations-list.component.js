@@ -19,16 +19,18 @@ class VaccinationsListController {
   constructor($scope, $state, $stateParams, $ngRedux, vaccinationsActions, serviceRequests, usSpinnerService, serviceFormatted) {
     serviceRequests.publisher('routeState', {state: $state.router.globals.current.views, breadcrumbs: $state.router.globals.current.breadcrumbs, name: 'patients-details'});
     serviceRequests.publisher('headerTitle', {title: 'Patients Details'});
+    vaccinationsActions.clear();
+    this.actionLoadList = vaccinationsActions.all;
 
     this.isShowCreateBtn = $state.router.globals.$current.name !== 'vaccinations-create';
     this.isShowExpandBtn = $state.router.globals.$current.name !== 'vaccinations';
-    
+    /* istanbul ignore next */
     this.create = function () {
       $state.go('vaccinations-create', {
         patientId: $stateParams.patientId
       });
     };
-
+    /* istanbul ignore next */
     this.go = function (id, source) {
       $state.go('vaccinations-detail', {
         patientId: $stateParams.patientId,
@@ -37,19 +39,26 @@ class VaccinationsListController {
         source: source
       });
     };
-    
-    this.setCurrentPageData = function (data) {
-      if (data.vaccinations.data) {
-        this.vaccinations = data.vaccinations.data;
-        
+    /* istanbul ignore next */
+    this.setCurrentPageData = function (store) {
+      const state = store.vaccinations;
+      const pagesInfo = store.pagesInfo;
+      const pluginName = 'vaccinations';
+
+      if (serviceRequests.checkIsCanLoadingListData(state, pagesInfo, pluginName, $stateParams.patientId)) {
+        this.actionLoadList($stateParams.patientId);
+        serviceRequests.setPluginPage(pluginName);
+        usSpinnerService.spin('list-spinner');
+      }
+      if (state.data) {
+        this.vaccinations = state.data;
+
         serviceFormatted.formattingTablesDate(this.vaccinations, ['dateCreated'], serviceFormatted.formatCollection.DDMMMYYYY);
         serviceFormatted.filteringKeys = ['vaccinationName', 'source', 'dateCreated'];
-
-        usSpinnerService.stop('patientSummary-spinner');
       }
-      
-      if (data.patientsGet.data) {
-        this.currentPatient = data.patientsGet.data;
+      if (state.data || state.error) {
+        usSpinnerService.stop('list-spinner');
+        setTimeout(() => { usSpinnerService.stop('list-spinner') }, 0);
       }
       if (serviceRequests.currentUserData) {
         this.currentUser = serviceRequests.currentUserData;
@@ -59,11 +68,7 @@ class VaccinationsListController {
     let unsubscribe = $ngRedux.connect(state => ({
       getStoreData: this.setCurrentPageData(state)
     }))(this);
-    
     $scope.$on('$destroy', unsubscribe);
-    
-    this.vaccinationsLoad = vaccinationsActions.all;
-    this.vaccinationsLoad($stateParams.patientId);
   }
 }
 

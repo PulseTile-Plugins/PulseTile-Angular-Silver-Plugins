@@ -16,71 +16,70 @@
 let templateVitalsCreate = require('./vitals-create.html');
 
 class VitalsCreateController {
-  constructor($scope, $state, $stateParams, $ngRedux, patientsActions, vitalsActions, serviceRequests, serviceVitalsSigns) {
+  constructor($scope, $state, $stateParams, $ngRedux, vitalsActions, serviceRequests, serviceVitalsSigns, serviceFormatted) {
+    $scope.actionLoadList = vitalsActions.all;
+    $scope.actionCreateDetail = vitalsActions.create;
+
     $scope.vitalStatuses = {};
     $scope.popoverLabels = serviceVitalsSigns.getLabels();
     $scope.pattern = serviceVitalsSigns.pattern;
 
     $scope.vitalEdit = {};
-    $scope.vitalEdit.dateCreate = Date.parse(new Date());
+    $scope.vitalEdit.dateCreated = new Date().getTime();
     $scope.vitalEdit.author = 'ripple_osi';
-
-    this.setCurrentPageData = function (data) {
-      if (data.vitals.dataCreate !== null) {
-        this.goList();
-      }
-      if (data.patientsGet.data) {
-        this.currentPatient = data.patientsGet.data;
-      }
-      if (serviceRequests.currentUserData) {
-        $scope.currentUser = serviceRequests.currentUserData;
-        $scope.vitalEdit.author = $scope.currentUser.email;
-      }
-      
-      $scope.vitalStatuses = serviceVitalsSigns.setVitalStatuses($scope.vitalEdit);
-    };
-
+    /* istanbul ignore next */
     $scope.getHighlighterClass = function (vitalName) {
       return serviceVitalsSigns.getHighlighterClass($scope.vitalStatuses[vitalName]);
     };
-
+    /* istanbul ignore next */
     $scope.changeVital = function (vital, vitalName) {
       $scope.vitalStatuses[vitalName] = serviceVitalsSigns.getStatusOnValue(vital[vitalName], vitalName);
       $scope.changeNewScore(vital);
     };
-
+    /* istanbul ignore next */
     $scope.changeNewScore = function (vital) {
       vital.newsScore = serviceVitalsSigns.countNewsScore($scope.vitalStatuses);
       $scope.vitalStatuses.newsScore = serviceVitalsSigns.getStatusOnValue(vital.newsScore, 'newsScore');
     };
-
+    /* istanbul ignore next */
     this.goList = function () {
       $state.go('vitals', {
         patientId: $stateParams.patientId,
         reportType: $stateParams.reportType,
       });
     };
-
+    /* istanbul ignore next */
     this.cancel = function () {
       this.goList();
     };
-
+    /* istanbul ignore next */
     $scope.create = function (vitalForm, vital) {
       $scope.formSubmitted = true;
       $scope.changeNewScore(vital);
 
       if (vitalForm.$valid) {
-        $scope.vitalsCreate(this.currentPatient.id, vital);
+        serviceFormatted.propsToString(vital, 'dateCreated');
+        $scope.actionCreateDetail($stateParams.patientId, vital);
       }
     }.bind(this);
+    /* istanbul ignore next */
+    this.setCurrentPageData = function (data) {
+      if (data.vitals.dataCreate !== null) {
+        $scope.actionLoadList($stateParams.patientId);
+        this.goList();
+      }
+      if (serviceRequests.currentUserData) {
+        $scope.currentUser = serviceRequests.currentUserData;
+        $scope.vitalEdit.author = $scope.currentUser.email;
+      }
+
+      $scope.vitalStatuses = serviceVitalsSigns.setVitalStatuses($scope.vitalEdit);
+    };
 
     let unsubscribe = $ngRedux.connect(state => ({
       getStoreData: this.setCurrentPageData(state)
     }))(this);
-
     $scope.$on('$destroy', unsubscribe);
-
-    $scope.vitalsCreate = vitalsActions.create;
   }
 }
 
@@ -89,5 +88,5 @@ const VitalsCreateComponent = {
   controller: VitalsCreateController
 };
 
-VitalsCreateController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'patientsActions', 'vitalsActions', 'serviceRequests', 'serviceVitalsSigns'];
+VitalsCreateController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'vitalsActions', 'serviceRequests', 'serviceVitalsSigns', 'serviceFormatted'];
 export default VitalsCreateComponent;

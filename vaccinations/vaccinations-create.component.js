@@ -16,24 +16,14 @@
 let templateVaccinationsCreate = require('./vaccinations-create.html');
 
 class VaccinationsCreateController {
-  constructor($scope, $state, $stateParams, $ngRedux, patientsActions, vaccinationsActions, serviceRequests) {
+  constructor($scope, $state, $stateParams, $ngRedux, vaccinationsActions, serviceRequests, serviceFormatted) {
+    $scope.actionLoadList = vaccinationsActions.all;
+    $scope.actionCreateDetail = vaccinationsActions.create;
+
     $scope.vaccination = {};
     $scope.vaccination.dateCreated = new Date();
     $scope.vaccination.source = 'Marand';
-
-    this.setCurrentPageData = function (data) {
-      if (data.vaccinations.dataCreate !== null) {
-        this.goList();
-      }
-      if (data.patientsGet.data) {
-        this.currentPatient = data.patientsGet.data;
-      }
-      if (serviceRequests.currentUserData) {
-        $scope.currentUser = serviceRequests.currentUserData;
-        $scope.vaccination.author = $scope.currentUser.email;
-      }
-    };
-
+    /* istanbul ignore next */
     this.goList = function () {
       $state.go('vaccinations', {
         patientId: $stateParams.patientId,
@@ -42,11 +32,11 @@ class VaccinationsCreateController {
         queryType: $stateParams.queryType
       });
     };
-    
+    /* istanbul ignore next */
     this.cancel = function () {
       this.goList();
     };
-    
+    /* istanbul ignore next */
     $scope.create = function (vaccinationForm, vaccination) {
       $scope.formSubmitted = true;
 
@@ -59,18 +49,29 @@ class VaccinationsCreateController {
           vaccinationDateTime: vaccination.vaccinationDateTime,
           source: vaccination.source
         };
-
-        $scope.vaccinationsCreate(this.currentPatient.id, toAdd);
+        serviceFormatted.propsToString(toAdd, 'vaccinationDateTime');
+        $scope.actionCreateDetail($stateParams.patientId, toAdd);
       }
     }.bind(this);
+    /* istanbul ignore next */
+    this.setCurrentPageData = function (store) {
+      if (store.vaccinations.dataCreate !== null) {
+        $scope.actionLoadList($stateParams.patientId);
+        this.goList();
+      }
+      if (store.patientsGet.data) {
+        this.currentPatient = store.patientsGet.data;
+      }
+      if (serviceRequests.currentUserData) {
+        $scope.currentUser = serviceRequests.currentUserData;
+        $scope.vaccination.author = $scope.currentUser.email;
+      }
+    };
 
     let unsubscribe = $ngRedux.connect(state => ({
       getStoreData: this.setCurrentPageData(state)
     }))(this);
-
     $scope.$on('$destroy', unsubscribe);
-
-    $scope.vaccinationsCreate = vaccinationsActions.create;
   }
 }
 
@@ -79,5 +80,5 @@ const VaccinationsCreateComponent = {
   controller: VaccinationsCreateController
 };
 
-VaccinationsCreateController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'patientsActions', 'vaccinationsActions', 'serviceRequests'];
+VaccinationsCreateController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'vaccinationsActions', 'serviceRequests', 'serviceFormatted'];
 export default VaccinationsCreateComponent;

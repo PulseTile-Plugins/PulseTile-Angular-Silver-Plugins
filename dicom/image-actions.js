@@ -13,9 +13,12 @@
   ~  See the License for the specific language governing permissions and
   ~  limitations under the License.
 */
-import {bindActionCreators} from 'redux';
-import * as types from '../../../constants/ActionTypes';
+import { bindActionCreators } from 'redux';
+import * as types from './action-types';
 
+export function clear() {
+  return { type: types.STUDIES__CLEAR }
+}
 export function allStudies(patientId) {
   return {
     types: [types.STUDIES, types.STUDIES_SUCCESS, types.STUDIES_ERROR],
@@ -28,6 +31,7 @@ export function allStudies(patientId) {
     },
 
     meta: {
+      patientId: patientId,
       timestamp: Date.now()
     }
   };
@@ -99,7 +103,7 @@ export function getInstance(patientId, instanceId, source) {
 
 export default function imageActions($ngRedux) {
   let actionCreator = {
-    allStudies, getAllSeriesInStudy, getSeriesDetails, getInstanceId, getInstance
+    allStudies, clear, getAllSeriesInStudy, getSeriesDetails, getInstanceId, getInstance
   };
 
   return bindActionCreators(actionCreator, $ngRedux.dispatch);

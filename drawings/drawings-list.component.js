@@ -19,6 +19,8 @@ class DrawingsListController {
   constructor($scope, $state, $stateParams, $ngRedux, drawingsActions, serviceRequests, usSpinnerService, serviceFormatted) {
     serviceRequests.publisher('routeState', {state: $state.router.globals.current.views, breadcrumbs: $state.router.globals.current.breadcrumbs, name: 'patients-details'});
     serviceRequests.publisher('headerTitle', {title: 'Patients Details'});
+    drawingsActions.clear();
+    this.actionLoadList = drawingsActions.all;
 
     this.isShowCreateBtn = $state.router.globals.$current.name !== 'drawings-create';
     this.isShowExpandBtn = $state.router.globals.$current.name !== 'drawings';
@@ -41,18 +43,25 @@ class DrawingsListController {
     };
 
     /* istanbul ignore next */
-    this.setCurrentPageData = function (data) {
-      if (data.drawings.data) {
-        this.drawings = data.drawings.data;
+    this.setCurrentPageData = function (store) {
+      const state = store.drawings;
+      const pagesInfo = store.pagesInfo;
+      const pluginName = 'drawings';
+
+      if (serviceRequests.checkIsCanLoadingListData(state, pagesInfo, pluginName, $stateParams.patientId)) {
+        this.actionLoadList($stateParams.patientId);
+        serviceRequests.setPluginPage(pluginName);
+        usSpinnerService.spin('list-spinner');
+      }
+      if (state.data) {
+        this.drawings = state.data;
 
         serviceFormatted.formattingTablesDate(this.drawings, ['dateCreated'], serviceFormatted.formatCollection.DDMMMYYYY);
         serviceFormatted.filteringKeys = ['name', 'date', 'source'];
-
-        usSpinnerService.stop('patientSummary-spinner');
       }
-      
-      if (data.patientsGet.data) {
-        this.currentPatient = data.patientsGet.data;
+      if (state.data || state.error) {
+        usSpinnerService.stop('list-spinner');
+        setTimeout(() => { usSpinnerService.stop('list-spinner') }, 0);
       }
       if (serviceRequests.currentUserData) {
         this.currentUser = serviceRequests.currentUserData;
@@ -62,11 +71,7 @@ class DrawingsListController {
     let unsubscribe = $ngRedux.connect(state => ({
       getStoreData: this.setCurrentPageData(state)
     }))(this);
-
     $scope.$on('$destroy', unsubscribe);
-
-    this.drawingsLoad = drawingsActions.all;
-    this.drawingsLoad($stateParams.patientId);
   }
 }
 

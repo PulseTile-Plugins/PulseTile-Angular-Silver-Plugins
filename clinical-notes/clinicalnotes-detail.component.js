@@ -17,31 +17,15 @@
 let templateClinicalnotesDetail = require('./clinicalnotes-detail.html');
 
 class ClinicalnotesDetailController {
-  constructor($scope, $state, $stateParams, $ngRedux, clinicalnotesActions, serviceRequests, usSpinnerService) {
-    
-    this.setCurrentPageData = function (data) {
-      /* istanbul ignore if  */
-      if (data.patientsGet.data) {
-        this.currentPatient = data.patientsGet.data;
-      }
-      if (data.clinicalnotes.dataGet) {
-        this.clinicalNote = data.clinicalnotes.dataGet;
-        this.dateCreated = moment(this.clinicalNote.dateCreated).format('DD-MMM-YYYY');
-        usSpinnerService.stop("clinicalNoteDetail-spinner");
-      }
-    };
+  constructor($scope, $state, $stateParams, $ngRedux, clinicalnotesActions, serviceRequests, usSpinnerService, serviceFormatted) {
+    this.actionLoadList = clinicalnotesActions.all;
+    this.actionLoadDetail = clinicalnotesActions.get;
+    $scope.actionUpdateDetail = clinicalnotesActions.update;
 
-    let unsubscribe = $ngRedux.connect(state => ({
-      getStoreData: this.setCurrentPageData(state)
-    }))(this);
+    usSpinnerService.spin('detail-spinner');
+    this.actionLoadDetail($stateParams.patientId, $stateParams.detailsIndex);
 
-    $scope.$on('$destroy', unsubscribe);
-
-    this.clinicalnotesLoad = clinicalnotesActions.get;
-    this.clinicalnotesLoad($stateParams.patientId, $stateParams.detailsIndex, $stateParams.source);
-  
     //Edit Clinical Note
-    
     $scope.isEdit = false;
 
     /* istanbul ignore next  */
@@ -50,37 +34,71 @@ class ClinicalnotesDetailController {
 
       $scope.currentUser = this.currentUser;
       $scope.clinicalNoteEdit = Object.assign({}, this.clinicalNote);
-      $scope.patient = this.currentPatient;
       
       $scope.clinicalNoteEdit.dateCreated = new Date(this.clinicalNote.dateCreated).toISOString().slice(0, 10);
     };
+    /* istanbul ignore next */
     this.cancelEdit = function () {
       $scope.isEdit = false;
     };
-
+    /* istanbul ignore next */
     $scope.confirmEdit = function (clinicalNoteForm, clinicalNote) {
       $scope.formSubmitted = true;
       /* istanbul ignore if  */
       if (clinicalNoteForm.$valid) {
         let toUpdate = {
           clinicalNotesType: clinicalNote.clinicalNotesType,
-          notes: clinicalNote.note,
+          note: clinicalNote.note,
           author: clinicalNote.author,
           source: clinicalNote.source,
           sourceId: clinicalNote.sourceId
         };
-        
-        this.clinicalNote = Object.assign(clinicalNote, $scope.clinicalNoteEdit);
         $scope.isEdit = false;
-        clinicalnotesActions.update($scope.patient.id, toUpdate);
-        setTimeout(function () {
-          $state.go('clinicalNotes-detail', {
-            patientId: $scope.patient.id,
-            clinicalNoteIndex: clinicalNote.sourceId
-          });
-        }, 1000);
+        serviceFormatted.propsToString(toUpdate);
+        $scope.actionUpdateDetail($stateParams.patientId, clinicalNote.sourceId, toUpdate);
       }
     };
+    /* istanbul ignore next */
+    this.setCurrentPageData = function (store) {
+      const state = store.clinicalnotes;
+      const { patientId, detailsIndex } = $stateParams;
+
+      // Get Details data
+      if (state.dataGet) {
+        this.clinicalNote = state.dataGet;
+        this.dateCreated = moment(this.clinicalNote.dateCreated).format('DD-MMM-YYYY');
+        (detailsIndex === state.dataGet.sourceId) ? usSpinnerService.stop('detail-spinner') : null;
+      }
+
+      // Update Detail
+      if (state.dataUpdate !== null) {
+        // After Update we request all list firstly
+        this.actionLoadList(patientId);
+      }
+      if (state.isUpdateProcess) {
+        usSpinnerService.spin('detail-update-spinner');
+        if (!state.dataGet && !state.isGetFetching) {
+          // We request detail when data is empty
+          // Details are cleared after request LoadAll list
+          this.actionLoadDetail(patientId, detailsIndex);
+        }
+      } else {
+        usSpinnerService.stop('detail-update-spinner');
+      }
+      if (serviceRequests.currentUserData) {
+        this.currentUser = serviceRequests.currentUserData;
+      }
+
+      if (state.error) {
+        usSpinnerService.stop('detail-spinner');
+        usSpinnerService.stop('detail-update-spinner');
+      }
+    };
+
+    let unsubscribe = $ngRedux.connect(state => ({
+      getStoreData: this.setCurrentPageData(state)
+    }))(this);
+    $scope.$on('$destroy', unsubscribe);
   }
 }
 
@@ -89,5 +107,5 @@ const ClinicalnotesDetailComponent = {
   controller: ClinicalnotesDetailController
 };
 
-ClinicalnotesDetailController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'clinicalnotesActions', 'serviceRequests', 'usSpinnerService'];
+ClinicalnotesDetailController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'clinicalnotesActions', 'serviceRequests', 'usSpinnerService', 'serviceFormatted'];
 export default ClinicalnotesDetailComponent;

@@ -19,13 +19,28 @@ import imageListComponent from './image-list.component';
 import imageDetailComponent from './image-detail.component';
 import imageActions from './image-actions';
 
+import studies from './studies-reducer-all';
+import series from './series-reducer-all';
+import instanceGet from './instance-reducer-get';
+import instanceIdGet from './instance-id-reducer-get';
+import ServiceActions from "./serviceActions";
+
 export default {
   "name": 'dicom',
   "routes": routes,
   "reducer": reducer,
+  "reducers": {
+    studies,
+    series,
+    instanceGet,
+    instanceIdGet,
+  },
   "components": {
     imageListComponent,
     imageDetailComponent
+  },
+  "services": {
+    serviceActions: ServiceActions
   },
   "actions": {
     imageActions

@@ -19,10 +19,12 @@ class ImageListController {
   constructor($scope, $window, $state, $stateParams, $ngRedux, imageActions, serviceRequests, usSpinnerService, serviceFormatted) {
     serviceRequests.publisher('routeState', {state: $state.router.globals.current.views, breadcrumbs: $state.router.globals.current.breadcrumbs, name: 'patients-details'});
     serviceRequests.publisher('headerTitle', {title: 'Patients Details'});
+    imageActions.clear();
+    this.actionLoadList = imageActions.allStudies;
 
     this.isShowCreateBtn = $state.router.globals.$current.name !== 'images-create';
     this.isShowExpandBtn = $state.router.globals.$current.name !== 'images';
-
+    /* istanbul ignore next */
     this.go = function (id, source) {
       $state.go('images-detail', {
         patientId: $stateParams.patientId,
@@ -31,24 +33,26 @@ class ImageListController {
         source: source
       });
     };
-    
-    this.create = function () {
-      $state.go('images-create', {
-          patientId: $stateParams.patientId
-      });
-    };
+    /* istanbul ignore next */
+    this.setCurrentPageData = function (store) {
+      const state = store.studies;
+      const pagesInfo = store.pagesInfo;
+      const pluginName = 'studies';
 
-    this.setCurrentPageData = function (data) {
-      if (data.studies.data) {
-        this.images = data.studies.data;
-      
+      if (serviceRequests.checkIsCanLoadingListData(state, pagesInfo, pluginName, $stateParams.patientId)) {
+        this.actionLoadList($stateParams.patientId);
+        serviceRequests.setPluginPage(pluginName);
+        usSpinnerService.spin('list-spinner');
+      }
+      if (state.data) {
+        this.images = state.data;
+
         serviceFormatted.formattingTablesDate(this.images, ['dateRecorded'], serviceFormatted.formatCollection.DDMMMYYYY);
         serviceFormatted.filteringKeys = ['studyDescription', 'dateRecorded', 'source'];
-        usSpinnerService.stop('patientSummary-spinner');
       }
-      
-      if (data.patientsGet.data) {
-        this.currentPatient = data.patientsGet.data;
+      if (state.data || state.error) {
+        usSpinnerService.stop('list-spinner');
+        setTimeout(() => { usSpinnerService.stop('list-spinner') }, 0);
       }
       if (serviceRequests.currentUserData) {
         this.currentUser = serviceRequests.currentUserData;
@@ -58,11 +62,7 @@ class ImageListController {
     let unsubscribe = $ngRedux.connect(state => ({
       getStoreData: this.setCurrentPageData(state)
     }))(this);
-
     $scope.$on('$destroy', unsubscribe);
-
-    this.imageLoad = imageActions.allStudies;
-    this.imageLoad($stateParams.patientId);
   }
 }
 

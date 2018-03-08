@@ -20,33 +20,20 @@ class ClinicalnotesListController {
   constructor($scope, $state, $stateParams, $ngRedux, clinicalnotesActions, serviceRequests, usSpinnerService, serviceFormatted) {
     serviceRequests.publisher('routeState', {state: $state.router.globals.current.views, breadcrumbs: $state.router.globals.current.breadcrumbs, name: 'patients-details'});
     serviceRequests.publisher('headerTitle', {title: 'Patients Details'});
+    clinicalnotesActions.clear();
+    this.actionLoadList = clinicalnotesActions.all;
 
     this.isShowCreateBtn = $state.router.globals.$current.name !== 'clinicalNotes-create';
     this.isShowExpandBtn = $state.router.globals.$current.name !== 'clinicalNotes';
 
-    this.setCurrentPageData = function (data) {
-      if (data.patientsGet.data) {
-        this.currentPatient = data.patientsGet.data;
-      }
-      if (data.clinicalnotes.data) {
-        this.clinicalNotes = data.clinicalnotes.data;
-
-        serviceFormatted.formattingTablesDate(this.clinicalNotes, ['dateCreated'], serviceFormatted.formatCollection.DDMMMYYYY);
-        serviceFormatted.filteringKeys = ['noteType', 'author', 'dateCreated', 'source'];
-      }
-      usSpinnerService.stop("patientSummary-spinner");
-
-      if (serviceRequests.currentUserData) {
-        this.currentUser = serviceRequests.currentUserData;
-      }
-    };
-
+    /* istanbul ignore next */
     this.create = function () {
       $state.go('clinicalNotes-create', {
         patientId: $stateParams.patientId
       });
     };
-    
+
+    /* istanbul ignore next */
     this.go = function (id, source) {
       $state.go('clinicalNotes-detail', {
         patientId: $stateParams.patientId,
@@ -56,14 +43,36 @@ class ClinicalnotesListController {
       });
     };
 
+    /* istanbul ignore next */
+    this.setCurrentPageData = function (store) {
+      const state = store.clinicalnotes;
+      const pagesInfo = store.pagesInfo;
+      const pluginName = 'clinicalNotes';
+
+      if (serviceRequests.checkIsCanLoadingListData(state, pagesInfo, pluginName, $stateParams.patientId)) {
+        this.actionLoadList($stateParams.patientId);
+        serviceRequests.setPluginPage(pluginName);
+        usSpinnerService.spin('list-spinner');
+      }
+      if (state.data) {
+        this.clinicalNotes = state.data;
+
+        serviceFormatted.formattingTablesDate(this.clinicalNotes, ['dateCreated'], serviceFormatted.formatCollection.DDMMMYYYY);
+        serviceFormatted.filteringKeys = ['clinicalNotesType', 'author', 'dateCreated', 'source'];
+      }
+      if (state.data || state.error) {
+        usSpinnerService.stop('list-spinner');
+        setTimeout(() => { usSpinnerService.stop('list-spinner') }, 0);
+      }
+      if (serviceRequests.currentUserData) {
+        this.currentUser = serviceRequests.currentUserData;
+      }
+    };
+
     let unsubscribe = $ngRedux.connect(state => ({
       getStoreData: this.setCurrentPageData(state)
     }))(this);
-
     $scope.$on('$destroy', unsubscribe);
-
-    this.clinicalnotesLoad = clinicalnotesActions.all;
-    this.clinicalnotesLoad($stateParams.patientId);
   }
 }
 

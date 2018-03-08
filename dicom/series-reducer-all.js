@@ -13,13 +13,15 @@
   ~  See the License for the specific language governing permissions and
   ~  limitations under the License.
 */
-import * as types from '../../../constants/ActionTypes';
+import * as types from './action-types';
 
 const INITIAL_STATE = {
   isFetching: false,
   error: false,
   data: null,
-  dataGet: null
+  dataGet: null,
+  isGetFetching: false,
+  patientId: null
 };
 
 export default function series(state = INITIAL_STATE, action) {
@@ -35,7 +37,8 @@ export default function series(state = INITIAL_STATE, action) {
     [types.SERIES_GET_SUCCESS]: (state) => {
       return Object.assign({}, state, {
         isFetching: false,
-        data: payload.response
+        data: payload.response,
+        patientId: payload.meta.patientId,
       });
     },
     [types.SERIES_GET_ERROR]: (state) => {
@@ -44,21 +47,31 @@ export default function series(state = INITIAL_STATE, action) {
         error: payload.error
       });
     },
+    [types.SERIES_GET__CLEAR]: (state) => {
+      return Object.assign({}, state, {
+        error: false,
+      });
+    },
+
     [types.SERIES_DETAILS_GET]: (state) => {
+      state.dataUpdate = null;
       return Object.assign({}, state, {
         isFetching: true,
+        isGetFetching: true,
         error: false
       });
     },
     [types.SERIES_DETAILS_GET_SUCCESS]: (state) => {
       return Object.assign({}, state, {
         isFetching: false,
+        isGetFetching: false,
         dataGet: payload.response
       });
     },
     [types.SERIES_DETAILS_GET_ERROR]: (state) => {
       return Object.assign({}, state, {
         isFetching: false,
+        isGetFetching: false,
         error: payload.error
       });
     }

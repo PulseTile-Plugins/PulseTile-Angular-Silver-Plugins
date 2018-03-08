@@ -15,8 +15,11 @@
 */
 
 import {bindActionCreators} from 'redux';
-import * as types from '../../../constants/ActionTypes';
+import * as types from './action-types';
 
+export function clear() {
+  return { type: types.PERSONALNOTES__CLEAR }
+}
 export function all(patientId) {
   return {
     types: [types.PERSONALNOTES, types.PERSONALNOTES_SUCCESS, types.PERSONALNOTES_ERROR],
@@ -29,6 +32,7 @@ export function all(patientId) {
     },
 
     meta: {
+      patientId: patientId,
       timestamp: Date.now()
     }
   };
@@ -41,7 +45,7 @@ export function get(patientId, compositionId, source) {
 
     config: {
       method: 'get',
-      url: '/api/patients/' + patientId + '/personalnotes/' + compositionId + '?source=' + source
+      url: '/api/patients/' + patientId + '/personalnotes/' + compositionId
     },
 
     meta: {
@@ -66,7 +70,7 @@ export function create(patientId, composition) {
     }
   };
 }
-export function update(patientId, composition) {
+export function update(patientId, sourceId, composition) {
   return {
     types: [types.PERSONALNOTES_UPDATE, types.PERSONALNOTES_UPDATE_SUCCESS, types.PERSONALNOTES_UPDATE_ERROR],
 
@@ -74,7 +78,7 @@ export function update(patientId, composition) {
 
     config: {
       method: 'put',
-      url: '/api/patients/' + patientId + '/personalnotes',
+      url: '/api/patients/' + patientId + '/personalnotes/' + sourceId,
       data: composition
     },
 
@@ -86,7 +90,7 @@ export function update(patientId, composition) {
 
 export default function personalnotesActions($ngRedux) {
   let actionCreator = {
-    all, get, create, update
+    all, clear, get, create, update
   };
 
   return bindActionCreators(actionCreator, $ngRedux.dispatch);

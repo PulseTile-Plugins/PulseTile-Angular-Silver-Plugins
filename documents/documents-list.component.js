@@ -16,28 +16,39 @@
 let templateDocumentsList = require('./documents-list.html');
 
 class DocumentsListController {
-  constructor($scope, $state, $stateParams, $ngRedux, documentsActions, serviceRequests, usSpinnerService, serviceFormatted, templateService) {
+  constructor($scope, $state, $stateParams, $ngRedux, documentsActions, serviceRequests, usSpinnerService, serviceFormatted) {
     serviceRequests.publisher('routeState', {state: $state.router.globals.current.views, breadcrumbs: $state.router.globals.current.breadcrumbs, name: 'patients-details'});
     serviceRequests.publisher('headerTitle', {title: 'Patients Details'});
-
-    this.go = function (id, documentType) {
-      templateService.setTemplateType(documentType);
+    documentsActions.clear();
+    this.actionLoadList = documentsActions.all;
+    /* istanbul ignore next */
+    this.go = function (id) {
       $state.go('documents-detail', {
         patientId: $stateParams.patientId,
         detailsIndex: id,
         page: $scope.currentPage || 1
       });
     };
+    /* istanbul ignore next */
+    this.setCurrentPageData = function (store) {
+      const state = store.documents;
+      const pagesInfo = store.pagesInfo;
+      const pluginName = 'documents';
 
-    this.setCurrentPageData = function (data) {
-      if (data.patientsGet.data) {
-        this.currentPatient = data.patientsGet.data;
+      if (serviceRequests.checkIsCanLoadingListData(state, pagesInfo, pluginName, $stateParams.patientId)) {
+        this.actionLoadList($stateParams.patientId);
+        serviceRequests.setPluginPage(pluginName);
+        usSpinnerService.spin('list-spinner');
       }
-      if (data.documents.data) {
-        this.documents = data.documents.data;
+      if (state.data) {
+        this.documents = state.data;
+
         serviceFormatted.formattingTablesDate(this.documents, ['dateCreated'], serviceFormatted.formatCollection.DDMMMYYYY);
         serviceFormatted.filteringKeys = ['documentType', 'dateCreated', 'source'];
-        usSpinnerService.stop('patientSummary-spinner');
+      }
+      if (state.data || state.error) {
+        usSpinnerService.stop('list-spinner');
+        setTimeout(() => { usSpinnerService.stop('list-spinner') }, 0);
       }
       if (serviceRequests.currentUserData) {
         this.currentUser = serviceRequests.currentUserData;
@@ -47,12 +58,7 @@ class DocumentsListController {
     let unsubscribe = $ngRedux.connect(state => ({
       getStoreData: this.setCurrentPageData(state)
     }))(this);
-
     $scope.$on('$destroy', unsubscribe);
-
-    this.documentsLoad = documentsActions.findAllDocuments;
-    this.documentsLoad($stateParams.patientId);
-
   }
 }
 
@@ -61,5 +67,5 @@ const DocumentsListComponent = {
   controller: DocumentsListController
 };
 
-DocumentsListController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'documentsActions', 'serviceRequests', 'usSpinnerService', 'serviceFormatted', 'templateService'];
+DocumentsListController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'documentsActions', 'serviceRequests', 'usSpinnerService', 'serviceFormatted'];
 export default DocumentsListComponent;

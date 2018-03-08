@@ -16,43 +16,28 @@
 let templateReferralsDetail= require('./referrals-detail.html');
 
 class ReferralsDetailController {
-  constructor($scope, $state, $stateParams, $ngRedux, referralsActions, usSpinnerService, serviceRequests) {
+  constructor($scope, $state, $stateParams, $ngRedux, referralsActions, usSpinnerService, serviceRequests, serviceFormatted) {
+    this.actionLoadList = referralsActions.all;
+    this.actionLoadDetail = referralsActions.get;
+    $scope.actionUpdateDetail = referralsActions.update;
+
+    usSpinnerService.spin('detail-spinner');
+    this.actionLoadDetail($stateParams.patientId, $stateParams.detailsIndex);
 
 		$scope.isEdit = false;
-
-    this.setCurrentPageData = function (data) {
-      if (data.patientsGet.data) {
-        this.currentPatient = data.patientsGet.data;
-      }
-      if (data.referrals.dataGet) {
-        this.referral = data.referrals.dataGet;
-        usSpinnerService.stop('referralsDetail-spinner');
-      }
-		if (serviceRequests.currentUserData) {
-			this.currentUser = serviceRequests.currentUserData;
-		}
-    };
-
-    let unsubscribe = $ngRedux.connect(state => ({
-      getStoreData: this.setCurrentPageData(state)
-    }))(this);
-
+    /* istanbul ignore next */
 		this.edit = function () {
-
 			$scope.isEdit = true;
 
 			$scope.currentUser = this.currentUser;
 			$scope.referralsEdit = Object.assign({}, this.referral);
-			$scope.patient = this.currentPatient;
-
-      // $scope.referralsEdit.dateCreated = new Date(this.referralsEdit.dateCreated).toISOString().slice(0, 10);
 			$scope.referralsEdit.dateCreated = new Date();
 		};
-
+    /* istanbul ignore next */
 		this.cancelEdit = function () {
 			$scope.isEdit = false;
 		};
-
+    /* istanbul ignore next */
 		$scope.confirmEdit = function (referralsForm, referrals) {
 			$scope.formSubmitted = true;
 
@@ -60,31 +45,61 @@ class ReferralsDetailController {
 				let toUpdate = {
 					referralFrom: referrals.referralFrom,
 					referralTo: referrals.referralTo,
-					dateOfReferral: referrals.dateOfReferral,
+					dateOfReferral: new Date(referrals.dateOfReferral),
 					referralReason: referrals.referralReason,
 					referralSummary: referrals.referralSummary,
 					author: referrals.author,
 					dateCreated: referrals.dateCreated,
-					source: referrals.source
+          source: referrals.source,
+          sourceId: referrals.sourceId,
+          userId: $stateParams.patientId
 				};
 
-				this.referralsEdit = Object.assign(referrals, toUpdate);
 				$scope.isEdit = false;
-				referralsActions.update($scope.patient.id, this.referralsEdit);
-				setTimeout(function () {
-					$state.go('referrals', {
-						patientId: $scope.patient.id,
-						clinicalNoteIndex: referrals.sourceId
-					});
-				}, 1000);
+        serviceFormatted.propsToString(toUpdate);
+        $scope.actionUpdateDetail($stateParams.patientId, referrals.sourceId, toUpdate);
 			}
 		};
+    /* istanbul ignore next */
+    this.setCurrentPageData = function (store) {
+      const state = store.referrals;
+      const { patientId, detailsIndex } = $stateParams;
 
+      // Get Details data
+      if (state.dataGet) {
+        this.referral = state.dataGet;
+        (detailsIndex === state.dataGet.sourceId) ? usSpinnerService.stop('detail-spinner') : null;
+      }
 
+      // Update Detail
+      if (state.dataUpdate !== null) {
+        // After Update we request all list firstly
+        this.actionLoadList(patientId);
+      }
+      if (state.isUpdateProcess) {
+        usSpinnerService.spin('detail-update-spinner');
+        if (!state.dataGet && !state.isGetFetching) {
+          // We request detail when data is empty
+          // Details are cleared after request LoadAll list
+          this.actionLoadDetail(patientId, detailsIndex);
+        }
+      } else {
+        usSpinnerService.stop('detail-update-spinner');
+      }
+      if (serviceRequests.currentUserData) {
+        this.currentUser = serviceRequests.currentUserData;
+      }
+
+      if (state.error) {
+        usSpinnerService.stop('detail-spinner');
+        usSpinnerService.stop('detail-update-spinner');
+      }
+    };
+
+    let unsubscribe = $ngRedux.connect(state => ({
+      getStoreData: this.setCurrentPageData(state)
+    }))(this);
     $scope.$on('$destroy', unsubscribe);
-
-    this.referralsLoad = referralsActions.get;
-    this.referralsLoad($stateParams.patientId, $stateParams.detailsIndex);
   }
 }
 
@@ -93,5 +108,5 @@ const ReferralsDetailComponent = {
   controller: ReferralsDetailController
 };
 
-ReferralsDetailController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'referralsActions', 'usSpinnerService', 'serviceRequests'];
+ReferralsDetailController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'referralsActions', 'usSpinnerService', 'serviceRequests', 'serviceFormatted'];
 export default ReferralsDetailComponent;

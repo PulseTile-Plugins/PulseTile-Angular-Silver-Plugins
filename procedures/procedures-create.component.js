@@ -16,23 +16,13 @@
 let templateProceduresCreate = require('./procedures-create.html');
 
 class ProceduresCreateController {
-  constructor($scope, $state, $stateParams, $ngRedux, patientsActions, proceduresActions, serviceRequests) {
+  constructor($scope, $state, $stateParams, $ngRedux, proceduresActions, serviceRequests, serviceFormatted) {
+    $scope.actionLoadList = proceduresActions.all;
+    $scope.actionCreateDetail = proceduresActions.create;
+
     $scope.procedure = {};
     $scope.procedure.dateSubmitted = new Date();
-
-    this.setCurrentPageData = function (data) {
-      if (data.procedures.dataCreate !== null) {
-        this.goList();
-      }
-      if (data.patientsGet.data) {
-        $scope.currentPatient = data.patientsGet.data;
-      }
-      if (serviceRequests.currentUserData) {
-        $scope.currentUser = serviceRequests.currentUserData;
-        $scope.procedure.author = $scope.currentUser.email;
-      }
-    };
-
+    /* istanbul ignore next */
     this.goList = function () {
       $state.go('procedures', {
         patientId: $stateParams.patientId,
@@ -41,27 +31,35 @@ class ProceduresCreateController {
         queryType: $stateParams.queryType
       });
     };
-
+    /* istanbul ignore next */
     this.cancel = function () {
       this.goList();
     };
-
+    /* istanbul ignore next */
     $scope.create = function (procedureForm, procedure) {
       $scope.formSubmitted = true;
 
       if (procedureForm.$valid) {
-
-        $scope.proceduresCreate($scope.currentPatient.id, procedure);
+        serviceFormatted.propsToString(procedure);
+        $scope.actionCreateDetail($stateParams.patientId, procedure);
+      }
+    };
+    /* istanbul ignore next */
+    this.setCurrentPageData = function (store) {
+      if (store.procedures.dataCreate !== null) {
+        $scope.actionLoadList($stateParams.patientId);
+        this.goList();
+      }
+      if (serviceRequests.currentUserData) {
+        $scope.currentUser = serviceRequests.currentUserData;
+        $scope.procedure.author = $scope.currentUser.email;
       }
     };
 
     let unsubscribe = $ngRedux.connect(state => ({
       getStoreData: this.setCurrentPageData(state)
     }))(this);
-
     $scope.$on('$destroy', unsubscribe);
-
-    $scope.proceduresCreate = proceduresActions.create;
   }
 }
 
@@ -70,5 +68,5 @@ const ProceduresCreateComponent = {
   controller: ProceduresCreateController
 };
 
-ProceduresCreateController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'patientsActions', 'proceduresActions', 'serviceRequests'];
+ProceduresCreateController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'proceduresActions', 'serviceRequests', 'serviceFormatted'];
 export default ProceduresCreateComponent;

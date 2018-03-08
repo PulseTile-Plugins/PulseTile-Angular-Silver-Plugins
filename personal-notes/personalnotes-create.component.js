@@ -17,23 +17,13 @@
 let templatePersonalnotesCreate = require('./personalnotes-create.html');
 
 class PersonalnotesCreateController {
-  constructor($scope, $state, $stateParams, $ngRedux, personalnotesActions, serviceRequests) {
+  constructor($scope, $state, $stateParams, $ngRedux, personalnotesActions, serviceRequests, serviceFormatted) {
+    $scope.actionLoadList = personalnotesActions.all;
+    $scope.actionCreateDetail = personalnotesActions.create;
+
     $scope.personalNote = {};
     $scope.personalNote.dateCreated = new Date().toISOString().slice(0, 10);
-    
-    this.setCurrentPageData = function (data) {
-      if (data.personalnotes.dataCreate !== null) {
-        this.goList();
-      }
-      if (data.patientsGet.data) {
-        this.currentPatient = data.patientsGet.data;
-      }
-      if (serviceRequests.currentUserData) {
-        $scope.currentUser = serviceRequests.currentUserData;
-        $scope.personalNote.author = $scope.currentUser.email;
-      }
-    };
-
+    /* istanbul ignore next */
     this.goList = function () {
       $state.go('personalNotes', {
         patientId: $stateParams.patientId,
@@ -42,11 +32,11 @@ class PersonalnotesCreateController {
         queryType: $stateParams.queryType
       });
     };
-    
+    /* istanbul ignore next */
     this.cancel = function () {
       this.goList();
     };
-    
+    /* istanbul ignore next */
     $scope.create = function (personalNoteForm, personalNote) {
       $scope.formSubmitted = true;
 
@@ -58,18 +48,26 @@ class PersonalnotesCreateController {
           author: personalNote.author,
           source: 'openehr'
         };
-
-        $scope.personalnotesCreate(this.currentPatient.id, toAdd);
+        serviceFormatted.propsToString(toAdd, 'dateCreated');
+        $scope.actionCreateDetail($stateParams.patientId, toAdd);
       }
     }.bind(this);
+    /* istanbul ignore next */
+    this.setCurrentPageData = function (store) {
+      if (store.personalnotes.dataCreate !== null) {
+        $scope.actionLoadList($stateParams.patientId);
+        this.goList();
+      }
+      if (serviceRequests.currentUserData) {
+        $scope.currentUser = serviceRequests.currentUserData;
+        $scope.personalNote.author = $scope.currentUser.email;
+      }
+    };
 
     let unsubscribe = $ngRedux.connect(state => ({
       getStoreData: this.setCurrentPageData(state)
     }))(this);
-
     $scope.$on('$destroy', unsubscribe);
-
-    $scope.personalnotesCreate = personalnotesActions.create;
   }
 }
 
@@ -78,5 +76,5 @@ const PersonalnotesCreateComponent = {
   controller: PersonalnotesCreateController
 };
 
-PersonalnotesCreateController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'personalnotesActions', 'serviceRequests'];
+PersonalnotesCreateController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'personalnotesActions', 'serviceRequests', 'serviceFormatted'];
 export default PersonalnotesCreateComponent;

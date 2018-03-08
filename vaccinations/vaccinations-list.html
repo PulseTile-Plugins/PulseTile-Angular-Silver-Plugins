@@ -14,7 +14,7 @@
   ~  limitations under the License.
   -->
 
-<div mc-full-panel table-settings order="name" filtering class="panel panel-primary">
+<div mc-full-panel table-settings order="vaccinationName" filtering class="panel panel-primary">
   <div class="panel-heading">
     <div class="control-group right">
       <button class="btn btn-success btn-inverse btn-filter" ng-click="toggleFilter()"><i class="btn-icon fa fa-filter"></i></button>
@@ -54,13 +54,16 @@
           <td data-th="Date" ng-class="sortClass('dateCreated')"><span>{{ vaccination.dateCreated}}</span></td>
         </tr>
 
-        <tr ng-if="!$ctrl.vaccinations.length">
-            <td colspan="4"><span class="label label-default">No vaccinations</span></td>
+        <tr ng-if="!$ctrl.vaccinations || !$ctrl.vaccinations.length">
+          <td colspan="4">
+            <span class="label label-default" ng-if="!$ctrl.vaccinations">Loading...</span>
+            <span class="label label-default" ng-if="$ctrl.vaccinations && !$ctrl.vaccinations.length">No vaccinations</span>
+          </td>
         </tr>
       </tbody>
     </table>
 
-    <!-- <span class="patientSummary-spinner" us-spinner="{radius:20, width:8, length: 16}" spinner-key="patientSummary-spinner" spinner-start-active="true"></span> -->
+		<span class="patientSummary-spinner" us-spinner="{radius:20, width:8, length: 16}" spinner-key="list-spinner" spinner-start-active="true"></span>
 
     <div class="panel-control">
       <div class="wrap-control-group">

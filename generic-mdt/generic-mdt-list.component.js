@@ -19,10 +19,12 @@ class GenericMdtListController {
   constructor($scope, $state, $stateParams, $ngRedux, genericmdtActions, serviceRequests, usSpinnerService, serviceFormatted) {
     serviceRequests.publisher('routeState', {state: $state.router.globals.current.views, breadcrumbs: $state.router.globals.current.breadcrumbs, name: 'patients-details'});
     serviceRequests.publisher('headerTitle', {title: 'Patients Details'});
+    genericmdtActions.clear();
+    this.actionLoadList = genericmdtActions.all;
 
     this.isShowCreateBtn = $state.router.globals.$current.name !== 'genericMdt-create';
     this.isShowExpandBtn = $state.router.globals.$current.name !== 'genericMdt';
-
+    /* istanbul ignore next */
     this.go = function (id) {
       $state.go('genericMdt-detail', {
         patientId: $stateParams.patientId,
@@ -30,23 +32,32 @@ class GenericMdtListController {
         page: $scope.currentPage || 1
       });
     };
-
+    /* istanbul ignore next */
     this.create = function () {
       $state.go('genericMdt-create', {
         patientId: $stateParams.patientId
       });
     };
+    /* istanbul ignore next */
+    this.setCurrentPageData = function (store) {
+      const state = store.genericmdt;
+      const pagesInfo = store.pagesInfo;
+      const pluginName = 'genericMDT';
 
-    this.setCurrentPageData = function (data) {
-      if (data.patientsGet.data) {
-        this.currentPatient = data.patientsGet.data;
-        usSpinnerService.stop('patientSummary-spinner');
+      if (serviceRequests.checkIsCanLoadingListData(state, pagesInfo, pluginName, $stateParams.patientId)) {
+        this.actionLoadList($stateParams.patientId);
+        serviceRequests.setPluginPage(pluginName);
+        usSpinnerService.spin('list-spinner');
       }
-      if (data.genericmdt.data) {
-        this.genericMdtComposition = data.genericmdt.data;
+      if (state.data) {
+        this.genericMdtComposition = state.data;
 
         serviceFormatted.formattingTablesDate(this.genericMdtComposition, ['dateOfRequest', 'dateOfMeeting'], serviceFormatted.formatCollection.DDMMMYYYY);
         serviceFormatted.filteringKeys = ['serviceTeam', 'dateOfRequest', 'dateOfMeeting', 'source'];
+      }
+      if (state.data || state.error) {
+        usSpinnerService.stop('list-spinner');
+        setTimeout(() => { usSpinnerService.stop('list-spinner') }, 0);
       }
       if (serviceRequests.currentUserData) {
         this.currentUser = serviceRequests.currentUserData;
@@ -56,11 +67,7 @@ class GenericMdtListController {
     let unsubscribe = $ngRedux.connect(state => ({
       getStoreData: this.setCurrentPageData(state)
     }))(this);
-
     $scope.$on('$destroy', unsubscribe);
-
-    this.genericmdtLoad = genericmdtActions.all;
-    this.genericmdtLoad($stateParams.patientId);
   }
 }
 

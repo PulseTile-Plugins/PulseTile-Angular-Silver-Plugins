@@ -16,54 +16,78 @@
 let templateVaccinationsDetail = require('./vaccinations-detail.html');
 
 class VaccinationsDetailController {
-  constructor($scope, $state, $stateParams, $ngRedux, patientsActions, vaccinationsActions, serviceRequests, usSpinnerService) {
+  constructor($scope, $state, $stateParams, $ngRedux, vaccinationsActions, serviceRequests, usSpinnerService, serviceFormatted) {
+    this.actionLoadList = vaccinationsActions.all;
+    this.actionLoadDetail = vaccinationsActions.get;
+    $scope.actionUpdateDetail = vaccinationsActions.update;
+
+    usSpinnerService.spin('detail-spinner');
+    this.actionLoadDetail($stateParams.patientId, $stateParams.detailsIndex);
+
     $scope.isEdit = false;
-
-    // this.vaccination = $stateParams.source;
-
+    /* istanbul ignore next */
     this.edit = function () {
       $scope.isEdit = true;
 
       $scope.vaccinationEdit = Object.assign({}, this.vaccination);
-      $scope.vaccinationEdit.date = new Date(+$scope.vaccinationEdit.date);
-      $scope.vaccinationEdit.dateCreate = new Date();
+      $scope.vaccinationEdit.dateCreated = new Date();
     };
-
+    /* istanbul ignore next */
     this.cancelEdit = function () {
       $scope.isEdit = false;
     };
-    
+    /* istanbul ignore next */
     $scope.confirmEdit = function (vaccinationForm, vaccination) {
       $scope.formSubmitted = true;
       if (vaccinationForm.$valid) {
         $scope.isEdit = false;
-        this.vaccination = Object.assign(this.vaccination, $scope.vaccinationEdit);
-        $scope.vaccinationsUpdate(this.currentPatient.id, $scope.vaccination);
+        $scope.vaccinationEdit.vaccinationDateTime = new Date($scope.vaccinationEdit.vaccinationDateTime).getTime();
+        $scope.vaccinationEdit.userId = $stateParams.patientId;
+
+        serviceFormatted.propsToString($scope.vaccinationEdit, 'vaccinationDateTime');
+        $scope.actionUpdateDetail($stateParams.patientId, vaccination.sourceId, $scope.vaccinationEdit);
       }
     }.bind(this);
+    /* istanbul ignore next */
+    this.setCurrentPageData = function (store) {
+      const state = store.vaccinations;
+      const { patientId, detailsIndex } = $stateParams;
 
-    this.setCurrentPageData = function (data) {
-      if (data.vaccinations.dataGet) {
-        this.vaccination = data.vaccinations.dataGet;
-        usSpinnerService.stop('vaccinationDetail-spinner');
+      // Get Details data
+      if (state.dataGet) {
+        this.vaccination = state.dataGet;
+        (detailsIndex === state.dataGet.sourceId) ? usSpinnerService.stop('detail-spinner') : null;
       }
-      if (data.patientsGet.data) {
-        this.currentPatient = data.patientsGet.data;
+
+      // Update Detail
+      if (state.dataUpdate !== null) {
+        // After Update we request all list firstly
+        this.actionLoadList(patientId);
+      }
+      if (state.isUpdateProcess) {
+        usSpinnerService.spin('detail-update-spinner');
+        if (!state.dataGet && !state.isGetFetching) {
+          // We request detail when data is empty
+          // Details are cleared after request LoadAll list
+          this.actionLoadDetail(patientId, detailsIndex);
+        }
+      } else {
+        usSpinnerService.stop('detail-update-spinner');
       }
       if (serviceRequests.currentUserData) {
         this.currentUser = serviceRequests.currentUserData;
+      }
+
+      if (state.error) {
+        usSpinnerService.stop('detail-spinner');
+        usSpinnerService.stop('detail-update-spinner');
       }
     };
 
     let unsubscribe = $ngRedux.connect(state => ({
       getStoreData: this.setCurrentPageData(state)
     }))(this);
-
     $scope.$on('$destroy', unsubscribe);
-
-    this.vaccinationsLoad = vaccinationsActions.get;
-    this.vaccinationsLoad($stateParams.patientId, $stateParams.detailsIndex);
-    $scope.vaccinationsUpdate = vaccinationsActions.update;
   }
 }
 
@@ -72,5 +96,5 @@ const VaccinationsDetailComponent = {
   controller: VaccinationsDetailController
 };
 
-VaccinationsDetailController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'patientsActions', 'vaccinationsActions', 'serviceRequests', 'usSpinnerService'];
+VaccinationsDetailController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'vaccinationsActions', 'serviceRequests', 'usSpinnerService', 'serviceFormatted'];
 export default VaccinationsDetailComponent;

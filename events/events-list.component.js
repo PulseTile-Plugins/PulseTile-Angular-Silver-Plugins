@@ -19,6 +19,9 @@ class EventsListController {
   constructor($scope, $state, $stateParams, $ngRedux, eventsActions, serviceRequests, usSpinnerService, serviceFormatted, $timeout, serviceStateManager) {
     serviceRequests.publisher('routeState', {state: $state.router.globals.current.views, breadcrumbs: $state.router.globals.current.breadcrumbs, name: 'patients-details'});
     serviceRequests.publisher('headerTitle', {title: 'Patients Details'});
+    eventsActions.clear();
+    this.actionLoadList = eventsActions.all;
+
     var filterTimelineData = serviceStateManager.getFilterTimeline();
 
     let _ = require('underscore');
@@ -29,7 +32,6 @@ class EventsListController {
 
     $scope.isFilterTimelineOpen = filterTimelineData.isOpen;
     $scope.sliderRange;
-    this.events = [];
     $scope.eventsFiltering = [];
     $scope.eventsTimeline = [];
 
@@ -100,16 +102,25 @@ class EventsListController {
     };
 
     /* istanbul ignore next */
-    this.setCurrentPageData = function (data) {
+    this.setCurrentPageData = function (store) {
       /* istanbul ignore if  */
-      if (data.events.data) {
-        this.events = data.events.data;
-      
+      const state = store.events;
+      const pagesInfo = store.pagesInfo;
+      const pluginName = 'events';
+
+      if (serviceRequests.checkIsCanLoadingListData(state, pagesInfo, pluginName, $stateParams.patientId)) {
+        this.actionLoadList($stateParams.patientId);
+        serviceRequests.setPluginPage(pluginName);
+        usSpinnerService.spin('list-spinner');
+      }
+      if (state.data) {
+        this.events = state.data;
+
         serviceFormatted.filteringKeys = ['name', 'type', 'dateTime'];
 
         this.eventsFilterSteps = $scope.getFilterArray(this.events);
-        serviceFormatted.formattingTablesDate(this.eventsFilterSteps, ['dateCreated', 'dateTime'], serviceFormatted.formatCollection.DDMMMMYYYY);
-        
+        serviceFormatted.formattingTablesDate(this.eventsFilterSteps, ['value'], serviceFormatted.formatCollection.DDMMMMYYYY);
+
         $scope.sliderRange = {
           minValue: filterTimelineData.rangeMin ? filterTimelineData.rangeMin : this.eventsFilterSteps[0].value,
           maxValue: filterTimelineData.rangeMax ? filterTimelineData.rangeMax : this.eventsFilterSteps[this.eventsFilterSteps.length - 1].value,
@@ -122,14 +133,12 @@ class EventsListController {
             stepsArray: this.eventsFilterSteps
           }
         };
-        
+
         $scope.formCollectionsEvents(this.events);
-
-        usSpinnerService.stop('patientSummary-spinner');
       }
-
-      if (data.patientsGet.data) {
-        this.currentPatient = data.patientsGet.data;
+      if (state.data || state.error) {
+        usSpinnerService.stop('list-spinner');
+        setTimeout(() => { usSpinnerService.stop('list-spinner') }, 0);
       }
       if (serviceRequests.currentUserData) {
         this.currentUser = serviceRequests.currentUserData;
@@ -138,14 +147,27 @@ class EventsListController {
     
     /* istanbul ignore next */
     $scope.formCollectionsEvents = function (events) {
-      $scope.eventsFiltering = $scope.filterEvents(events);
+      $scope.eventsFiltering = $scope.filterEventsRange(events);
       $scope.eventsTimeline = $scope.modificateEventsArr($scope.eventsFiltering);
 
       serviceFormatted.formattingTablesDate($scope.eventsFiltering, ['dateTime'], serviceFormatted.formatCollection.DDMMMYYYY);
     };
 
     /* istanbul ignore next */
-    $scope.filterEvents = function (events) {
+    $scope.filterEvents = function (collection, filterBy, filterKeys) {
+      return collection.filter((item) => {
+          let str = '';
+
+          filterKeys.forEach((key) => {
+            str += item[key] ? item[key].toString().toLowerCase() + ' ' : '';
+          });
+
+          return str.indexOf(filterBy.toLowerCase() || '') !== -1;
+        })
+    };
+
+    /* istanbul ignore next */
+    $scope.filterEventsRange = function (events) {
       var newEvents = [];
       var minRange, maxRange;
       if ($scope.isFilterTimelineOpen) {
@@ -172,7 +194,7 @@ class EventsListController {
       var countLabel = 3;
 
       arr = _.chain(arr)
-            .filter(function (el, index, arr) {
+            .filter(function (el) {
               return el.dateTime;
             })
             .uniq(function (el) {
@@ -188,7 +210,7 @@ class EventsListController {
               if (index % Math.round(arr.length / countLabel) === 0 ||
                   index === arr.length - 1) {
 
-                newEl.legend = el.dateTime;
+                newEl.legend = serviceFormatted.formattingDate(el.dateTime, serviceFormatted.formatCollection.DDMMMYYYYHHmm);;
               }
               
               return newEl;
@@ -219,8 +241,6 @@ class EventsListController {
 
       return arr;
     };
-    
-
 
     $scope.$watch('sliderRange.minValue', function() {
       if (this.events) {
@@ -238,15 +258,20 @@ class EventsListController {
       }
     }.bind(this));
 
+    $scope.$watch('queryFilter', function(queryFilterValue) {
+      if (this.events) {
+        this.events.map(function (el) {
+          el['dateTimeConvert'] = serviceFormatted.formattingDate(el['dateTime'], serviceFormatted.formatCollection.DDMMMYYYYHHmm);
+        });
+
+        $scope.formCollectionsEvents($scope.filterEvents(this.events, queryFilterValue, ['name', 'type', 'dateTimeConvert']));
+      }
+    }.bind(this));
+
     let unsubscribe = $ngRedux.connect(state => ({
       getStoreData: this.setCurrentPageData(state)
     }))(this);
-    
     $scope.$on('$destroy', unsubscribe);
-    
-    this.eventsLoad = eventsActions.all;
-    this.eventsLoad($stateParams.patientId);
-
   }
 }
 

@@ -14,8 +14,11 @@
   ~  limitations under the License.
 */
 import {bindActionCreators} from 'redux';
-import * as types from '../../../constants/ActionTypes';
+import * as types from './action-types';
 
+export function clear() {
+  return { type: types.REFERRALS__CLEAR }
+}
 export function all(patientId) {
   return {
     types: [types.REFERRALS, types.REFERRALS_SUCCESS, types.REFERRALS_ERROR],
@@ -28,6 +31,7 @@ export function all(patientId) {
     },
 
     meta: {
+      patientId: patientId,
       timestamp: Date.now()
     }
   };
@@ -65,7 +69,7 @@ export function create(patientId, composition) {
     }
   };
 }
-export function update(patientId, composition) {
+export function update(patientId, sourceId, composition) {
   return {
     types: [types.REFERRALS_UPDATE, types.REFERRALS_UPDATE_SUCCESS, types.REFERRALS_UPDATE_ERROR],
 
@@ -73,7 +77,7 @@ export function update(patientId, composition) {
 
     config: {
       method: 'put',
-      url: '/api/patients/' + patientId + '/referrals',
+      url: '/api/patients/' + patientId + '/referrals/' + sourceId,
       data: composition
     },
 
@@ -85,7 +89,7 @@ export function update(patientId, composition) {
 
 export default function referralsActions($ngRedux) {
   let actionCreator = {
-    all, get, create, update
+    all, clear, get, create, update
   };
 
   return bindActionCreators(actionCreator, $ngRedux.dispatch);

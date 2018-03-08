@@ -14,8 +14,11 @@
   ~  limitations under the License.
 */
 import {bindActionCreators} from 'redux';
-import * as types from '../../../constants/ActionTypes';
+import * as types from './action-types';
 
+export function clear() {
+  return { type: types.PROCEDURES__CLEAR }
+}
 export function all(patientId) {
   return {
     types: [types.PROCEDURES, types.PROCEDURES_SUCCESS, types.PROCEDURES_ERROR],
@@ -28,6 +31,7 @@ export function all(patientId) {
     },
 
     meta: {
+      patientId: patientId,
       timestamp: Date.now()
     }
   };
@@ -40,7 +44,7 @@ export function get(patientId, compositionId, source) {
 
     config: {
       method: 'get',
-      url: '/api/patients/' + patientId + '/procedures/' + compositionId + '?source=' + source
+      url: '/api/patients/' + patientId + '/procedures/' + compositionId
     },
 
     meta: {
@@ -65,7 +69,7 @@ export function create(patientId, composition) {
     }
   };
 }
-export function update(patientId, composition) {
+export function update(patientId, sourceId, composition) {
   return {
     types: [types.PROCEDURES_UPDATE, types.PROCEDURES_UPDATE_SUCCESS, types.PROCEDURES_UPDATE_ERROR],
 
@@ -73,7 +77,7 @@ export function update(patientId, composition) {
 
     config: {
       method: 'put',
-      url: '/api/patients/' + patientId + '/procedures',
+      url: '/api/patients/' + patientId + '/procedures/' + sourceId,
       data: composition
     },
 
@@ -85,7 +89,7 @@ export function update(patientId, composition) {
 
 export default function proceduresActions($ngRedux) {
   let actionCreator = {
-    all, get, create, update
+    all, clear, get, create, update
   };
 
   return bindActionCreators(actionCreator, $ngRedux.dispatch);

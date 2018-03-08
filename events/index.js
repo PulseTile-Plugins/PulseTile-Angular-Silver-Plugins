@@ -20,6 +20,7 @@ import eventsListComponent from './events-list.component';
 import eventsCreateComponent from './events-create.component';
 import eventsDetailComponent from './events-detail.component';
 import eventsActions from './events-actions';
+import ScheduleModal from './schedule-modal';
 
 export default {
   "name": 'events',
@@ -29,6 +30,9 @@ export default {
     eventsListComponent,
     eventsCreateComponent,
     eventsDetailComponent
+  },
+  "factories": {
+    ScheduleModal
   },
   "actions": {
     eventsActions

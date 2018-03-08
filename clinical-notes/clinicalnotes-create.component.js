@@ -17,23 +17,13 @@
 let templateClinicalnotesCreate = require('./clinicalnotes-create.html');
 
 class ClinicalnotesCreateController {
-  constructor($scope, $state, $stateParams, $ngRedux, clinicalnotesActions, serviceRequests) {
+  constructor($scope, $state, $stateParams, $ngRedux, clinicalnotesActions, serviceRequests, serviceFormatted) {
+    $scope.actionLoadList = clinicalnotesActions.all;
+    $scope.actionCreateDetail = clinicalnotesActions.create;
+
     $scope.clinicalNote = {};
     $scope.clinicalNote.dateCreated = new Date().toISOString().slice(0, 10);
-    
-    this.setCurrentPageData = function (data) {
-      if (data.clinicalnotes.dataCreate !== null) {
-        this.goList();
-      }
-      if (data.patientsGet.data) {
-        this.currentPatient = data.patientsGet.data;
-      }
-      if (serviceRequests.currentUserData) {
-        $scope.currentUser = serviceRequests.currentUserData;
-        $scope.clinicalNote.author = $scope.currentUser.email;
-      }
-    };
-
+    /* istanbul ignore next */
     this.goList = function () {
       $state.go('clinicalNotes', {
         patientId: $stateParams.patientId,
@@ -42,34 +32,45 @@ class ClinicalnotesCreateController {
         queryType: $stateParams.queryType
       });
     };
-    
+    /* istanbul ignore next */
     this.cancel = function () {
       this.goList();
     };
-    
+
+    /* istanbul ignore next */
     $scope.create = function (clinicalNoteForm, clinicalNote) {
       $scope.formSubmitted = true;
 
       if (clinicalNoteForm.$valid) {
         let toAdd = {
           clinicalNotesType: clinicalNote.clinicalNotesType,
-          notes: clinicalNote.notes,
+          note: clinicalNote.note,
           dateCreated: clinicalNote.dateCreated,
           author: clinicalNote.author,
           source: 'openehr'
         };
 
-        $scope.clinicalnotesCreate(this.currentPatient.id, toAdd);
+        serviceFormatted.propsToString(toAdd, 'dateCreated');
+        $scope.actionCreateDetail($stateParams.patientId, toAdd);
       }
     }.bind(this);
+
+    /* istanbul ignore next */
+    this.setCurrentPageData = function (store) {
+      if (store.clinicalnotes.dataCreate !== null) {
+        $scope.actionLoadList($stateParams.patientId);
+        this.goList();
+      }
+      if (serviceRequests.currentUserData) {
+        $scope.currentUser = serviceRequests.currentUserData;
+        $scope.clinicalNote.author = $scope.currentUser.email;
+      }
+    };
 
     let unsubscribe = $ngRedux.connect(state => ({
       getStoreData: this.setCurrentPageData(state)
     }))(this);
-
     $scope.$on('$destroy', unsubscribe);
-
-    $scope.clinicalnotesCreate = clinicalnotesActions.create;
   }
 }
 
@@ -78,5 +79,5 @@ const ClinicalnotesCreateComponent = {
   controller: ClinicalnotesCreateController
 };
 
-ClinicalnotesCreateController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'clinicalnotesActions', 'serviceRequests'];
+ClinicalnotesCreateController.$inject = ['$scope', '$state', '$stateParams', '$ngRedux', 'clinicalnotesActions', 'serviceRequests', 'serviceFormatted'];
 export default ClinicalnotesCreateComponent;

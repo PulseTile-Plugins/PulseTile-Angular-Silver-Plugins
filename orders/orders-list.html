@@ -48,19 +48,22 @@
       </thead>
 
       <tbody>
-        <tr dir-paginate="orderItem in $ctrl.orders | filter: queryFiltering | orderBy:[orderItem] : reverse | itemsPerPage: 10" current-page="currentPage"  ng-click="$ctrl.go(orderItem.sourceId, orderItem.source)" ng-class="{info: selectedRow(orderItem.sourceId)}">
+        <tr dir-paginate="orderItem in $ctrl.orders | filter: queryFiltering | orderBy:[order] : reverse | itemsPerPage: 10" current-page="currentPage"  ng-click="$ctrl.go(orderItem.sourceId, orderItem.source)" ng-class="{info: selectedRow(orderItem.sourceId)}">
           <td data-th="Order Name" ng-class="sortClass('name');"><span>{{ orderItem.name }}</span></td>
           <td data-th="Date" ng-class="sortClass('orderDate');"><span>{{ orderItem.orderDate }}</span></td>
           <td data-th="Source" ng-class="sortClass('source');"><span>{{ orderItem.source }}</span></td>
         </tr>
 
-        <tr ng-if="!$ctrl.orders.length">
-          <td colspan="4"><span class="label label-default">No orders</span></td>
+        <tr ng-if="!$ctrl.orders || !$ctrl.orders.length">
+          <td colspan="4">
+            <span class="label label-default" ng-if="!$ctrl.orders">Loading...</span>
+            <span class="label label-default" ng-if="$ctrl.orders && !$ctrl.orders.length">No orders</span>
+          </td>
         </tr>
       </tbody>
     </table>
 
-    <span class="patientSummary-spinner" us-spinner="{radius:20, width:8, length: 16}" spinner-key="patientSummary-spinner" spinner-start-active="true"></span>
+		<span class="patientSummary-spinner" us-spinner="{radius:20, width:8, length: 16}" spinner-key="list-spinner" spinner-start-active="true"></span>
 
     <div class="panel-control">
       <div class="wrap-control-group">
